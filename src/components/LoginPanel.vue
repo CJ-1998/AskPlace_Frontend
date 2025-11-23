@@ -56,7 +56,7 @@
       <!-- Sign Up Link -->
       <div class="text-center text-gray-600">
         계정이 없으신가요?
-        <router-link to="/signup" class="text-teal-500 hover:text-teal-600 font-semibold">
+        <router-link to="/auth/signup" class="text-teal-500 hover:text-teal-600 font-semibold">
           회원가입
         </router-link>
       </div>
@@ -68,7 +68,7 @@
         <div class="flex-1 h-px bg-gray-300"></div>
       </div>
 
-      <!-- Social Login -->
+      <!-- Social Login
       <div class="space-y-2">
         <button class="w-full py-2 bg-white hover:bg-gray-50 text-gray-900 rounded-lg transition border border-gray-300 font-medium flex items-center justify-center gap-2">
           <span>🔵</span> Google로 로그인
@@ -77,6 +77,7 @@
           <span>🍎</span> Apple로 로그인
         </button>
       </div>
+       -->
 
       <!-- Footer -->
       <p class="text-center text-gray-500 text-sm mt-6">
