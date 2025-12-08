@@ -1,5 +1,12 @@
-# Vue 3 + TypeScript + Vite
+# AskPlace
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 기술 스택
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+- **Vue 3** - Composition API
+- **TypeScript** - 타입 안전성
+- **Vue Router** - 라우팅
+- **Pinia** - 상태 관리
+- **Tailwind CSS** - 스타일링
+- **shadcn-vue** - UI 컴포넌트
+- **vue-draggable-plus** - 드래그앤드롭
+- **Vite** - 빌드 도구

@@ -4,8 +4,8 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
         <div>
           <div class="flex items-center gap-2 mb-4">
-            <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
-              <span class="text-white font-bold">✈</span>
+            <div class="w-8 h-8 bg-zinc-200 rounded-lg flex items-center justify-center">
+              <img src="@/assets/askPlace.png" alt="Logo" class="w-5 h-5" />
             </div>
             <span class="text-lg font-bold text-gray-900">AskPlace</span>
           </div>
