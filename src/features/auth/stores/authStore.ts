@@ -116,7 +116,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Synchronous getters from loaded state
   // Note: Data must be fetched first for these to work
-  const getPlaceById = (id: number | string) => places.value.find((p: Place) => p.id == Number(id))
+  const getPlaceById = (id: number | string) => places.value.find((p: Place) => p.placeId === String(id))
   const getPlanById = (id: number | string) => plans.value.find((p: Plan) => p.id == Number(id))
   const getVideoById = (id: number | string) => videos.value.find((v: Video) => v.id == Number(id))
 

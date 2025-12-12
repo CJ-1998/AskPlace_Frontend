@@ -7,8 +7,6 @@ declare global {
   }
 }
 
-
-
 const mapContainer = ref<HTMLElement | null>(null)
 
 onMounted(() => {

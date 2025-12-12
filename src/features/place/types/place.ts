@@ -1,36 +1,23 @@
 export interface Place {
-  id: number
-  title: string
-  location: string
-  desc: string
-  tags: string[]
-  image: string
-  lat?: number
-  lng?: number
-  live?: boolean
-  category?: string
-  operatingHours?: string
-  admission?: string
-  parking?: string
-  phone?: string
-  website?: string
-  season?: string
+  placeId: string
+  placeName: string
+  placeAddress: string
+  placeDetailAddress?: string
+  latitude: number
+  longitude: number
+  placePhoneNumber?: string
+  placeImageUrl?: string
+  placeThumbnailImageUrl?: string
+  contentId: string
+  contentTypeId: string
+  region: string
+  siGunGu: string
+  placeDescription?: string
 }
 
-export interface Location {
-  lat: number
-  lng: number
-}
-
-export interface Filter {
-  location: string
-  category?: string[]
-  theme?: string[]
-  season?: string[]
-}
-
-export interface ToastMessage {
-  show: boolean
-  message: string
-  type?: 'success' | 'error' | 'info'
+export interface PlaceSearchParams {
+  keyword?: string
+  region?: string
+  sigungu?: string
+  contentTypeId?: string
 }

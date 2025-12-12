@@ -1,19 +1,18 @@
-<!-- src/views/PlanCreatePage.vue -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/features/auth/stores/authStore'
 import { useToast } from '@/shared/composables/useToast'
 import type { Place } from '@/features/place/types/place'
 import { VueDraggable } from 'vue-draggable-plus'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
-
+import { usePlace } from '@/features/place/composables/usePlace'
 const router = useRouter()
-const store = useAuthStore()
 const { showToast } = useToast()
+const { places } = usePlace()
 
 const searchQuery = ref('')
+const filteredPlaces = ref<Place[]>([])
 
 // 각 일차별 계획 데이터 (초기값 빈 배열)
 const dailyPlans = ref<Place[][]>([
@@ -21,13 +20,19 @@ const dailyPlans = ref<Place[][]>([
   [], // 2일차
 ])
 
+onMounted(async () => {
+    // await getPlaces()
+    filteredPlaces.value = places.value
+})
+
 const addToItinerary = (place: Place) => {
   // 기본적으로 1일차에 추가
   dailyPlans.value[0].push(place)
-  showToast(`${place.title}이(가) 1일차에 추가되었습니다.`)
+  showToast(`${place.placeName}이(가) 1일차에 추가되었습니다.`)
 }
 
 const handleSave = () => {
+  // 지금은 실제 저장되는 것은 아니고 무조건 성공이라고 보여주기만함.
   showToast('계획이 저장되었습니다!')
   setTimeout(() => {
     router.push({ name: 'plan' })
@@ -78,24 +83,24 @@ const onClone = (element: Place) => {
           <div class="text-xs font-bold text-slate-500 mb-2">추천 여행지 (드래그 가능)</div>
           
           <VueDraggable
-            v-model="store.places"
+            :model-value="places"
             :group="{ name: 'places', pull: 'clone', put: false }"
             :clone="onClone"
             class="space-y-3"
           >
             <div 
-              v-for="place in store.places" 
-              :key="place.id" 
+              v-for="place in places" 
+              :key="place.placeId" 
               class="flex gap-3 p-2 border rounded-lg hover:shadow-sm cursor-grab active:cursor-grabbing bg-white"
             >
               <img 
-                :src="place.image" 
-                :alt="place.title"
+                :src="place.placeImageUrl" 
+                :alt="place.placeName"
                 class="w-12 h-12 rounded bg-slate-200 object-cover"
               >
               <div class="flex-1">
-                <div class="text-sm font-bold">{{ place.title }}</div>
-                <div class="text-xs text-slate-400">{{ place.location }}</div>
+                <div class="text-sm font-bold">{{ place.placeName }}</div>
+                <div class="text-xs text-slate-400">{{ place.placeAddress }}</div>
               </div>
               <button 
                 @click="addToItinerary(place)" 
@@ -137,8 +142,8 @@ const onClone = (element: Place) => {
                   {{ index + 1 }}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium truncate">{{ item.title }}</div>
-                  <div class="text-xs text-slate-400 truncate">{{ item.category }}</div>
+                  <div class="text-sm font-medium truncate">{{ item.placeName }}</div>
+                  <div class="text-xs text-slate-400 truncate">{{ item.placeAddress }}</div>
                 </div>
                 <button class="text-slate-300 hover:text-red-500" @click="items.splice(index, 1)">
                   <i class="fa-solid fa-xmark"></i>

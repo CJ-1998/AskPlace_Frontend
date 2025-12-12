@@ -30,12 +30,25 @@
     </section>
     
     <section class="container mx-auto px-4 py-12">
-      <h2 class="text-2xl font-bold mb-6">오늘의 추천 여행지</h2>
+      <h2 class="text-2xl font-bold mb-6">오늘의 추천 여행지 (카드형)</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <PlaceCard 
-          v-for="place in store.places.slice(0, 3)" 
-          :key="place.id" 
+          v-for="place in places.slice(0, 3)" 
+          :key="place.placeId" 
           :place="place"
+          @click="handlePlaceClick"
+        />
+      </div>
+    </section>
+
+    <section class="container mx-auto px-4 pb-20">
+      <h2 class="text-2xl font-bold mb-6">오늘의 추천 여행지 (리스트형)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <PlaceListItem 
+          v-for="place in places" 
+          :key="place.placeId" 
+          :place="place"
+          @click="handlePlaceClick"
         />
       </div>
     </section>
@@ -45,16 +58,25 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/features/auth/stores/authStore'
 import PlaceCard from '@/features/place/components/PlaceCard.vue'
+import PlaceListItem from '@/features/place/components/PlaceListItem.vue'
 import { Input } from '@/shared/components/ui/input'
 import { Button } from '@/shared/components/ui/button'
+import type { Place } from '@/features/place/types/place'
 
 const router = useRouter()
-const store = useAuthStore()
 const searchQuery = ref('')
+
+import { MOCK_PLACES } from '@/mocks/place'
+
+// 임시 데이터 사용(테스트를 위함)
+const places = ref<Place[]>(MOCK_PLACES)
 
 const handleSearch = () => {
   router.push({ name: 'search', query: { q: searchQuery.value } })
+}
+
+const handlePlaceClick = (id: string) => {
+  router.push({ name: 'place-detail', params: { id } })
 }
 </script>

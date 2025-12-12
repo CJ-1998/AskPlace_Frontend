@@ -1,37 +1,59 @@
+<script setup lang="ts">
+import type { Place } from '@/features/place/types/place'
+import { MapPin, Star } from 'lucide-vue-next'
+import { Card, CardContent } from '@/shared/components/ui/card'
+import { Badge } from '@/shared/components/ui/badge'
+
+interface Props {
+  place: Place
+}
+
+defineProps<Props>()
+
+const emit = defineEmits<{
+  click: [id: string]
+}>()
+</script>
+
 <template>
-  <Card class="cursor-pointer group border-0 shadow-none bg-transparent" @click="handleClick">
-    <CardContent class="p-0">
-      <div class="rounded-xl overflow-hidden mb-3 h-48 relative">
-        <img 
-          :src="place.image" 
-          :alt="place.title"
-          class="w-full h-full object-cover group-hover:scale-105 transition-transform"
-        >
-        <span 
-          v-if="place.live" 
-          class="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold"
-        >
-          LIVE
-        </span>
+  <Card 
+    class="overflow-hidden bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+    @click="emit('click', place.placeId)"
+  >
+    
+    <div class="aspect-[4/3] w-full overflow-hidden relative">
+      <img 
+        :src="place.placeImageUrl || place.placeThumbnailImageUrl || '/placeholder.jpg'" 
+        :alt="place.placeName" 
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    </div>
+    
+    <CardContent class="p-4">
+      <div class="flex justify-between items-start mb-2">
+        <h3 class="text-lg font-bold text-gray-900 line-clamp-1">{{ place.placeName }}</h3>
+        
+        <!-- TODO : 레이팅, 점수를 띄우는 구간  -->
+        <div class="flex items-center gap-1 text-yellow-500 text-sm">
+          <Star class="w-4 h-4 fill-current" />
+          <span>{{ 4.5 }}</span>
+        </div>
       </div>
-      <h3 class="font-bold text-lg">{{ place.title }}</h3>
-      <p class="text-slate-500 text-sm">{{ place.location }}</p>
+
+      <div class="flex items-center gap-1 text-sm text-gray-500 mb-3">
+        <MapPin class="w-3 h-3" />
+        <span class="truncate">{{ place.placeAddress }}</span>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <Badge variant="secondary" class="bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-md font-normal px-2 py-1">
+          {{ place.region }}
+        </Badge>
+        <Badge variant="secondary" class="bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-md font-normal px-2 py-1">
+          {{ place.siGunGu }}
+        </Badge>
+      </div>
     </CardContent>
   </Card>
 </template>
-
-<script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { Card, CardContent } from '@/shared/components/ui/card'
-import type { Place } from '@/features/place/types/place'
-
-const props = defineProps<{
-  place: Place
-}>()
-
-const router = useRouter()
-
-const handleClick = () => {
-  router.push({ name: 'place-detail', params: { id: props.place.id } })
-}
-</script>

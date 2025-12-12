@@ -23,8 +23,8 @@ export const userApi = {
 
   // 내 활동 내역 조회 (여행 계획, 찜한 장소, 비디오 등)
   async getUserActivity() {
-    // TODO: 백엔드 API 구현 후 연동 필요
-    // 현재는 빈 배렬 반환하여 에러 방지
+    // TODO : 백엔드 API 구현 후 연동 필요
+    // 현재는 빈 배열 반환하여 에러 방지
     return {
       myPlans: [],
       likedPlaces: [],
