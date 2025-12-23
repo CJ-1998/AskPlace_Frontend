@@ -10,7 +10,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { useAuthStore } from '@/features/auth/stores/auth'
 
 const authStore = useAuthStore()
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { UserProfile, UserActivity } from '@/features/user/types/user'
-import { Button } from '@/shared/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card'
-import { Separator } from '@/shared/components/ui/separator'
-import { Input } from '@/shared/components/ui/input'
+import { Button } from '@ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@ui/avatar'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@ui/card'
+import { Separator } from '@ui/separator'
+import { Input } from '@ui/input'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose
-} from '@/shared/components/ui/dialog'
+} from '@ui/dialog'
 import { Edit2, LogOut, Save, X, Trash2, Lock } from 'lucide-vue-next'
 
 interface Props {

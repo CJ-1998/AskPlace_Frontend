@@ -5,7 +5,7 @@
   >
     <div class="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-slate-100">
       <img 
-        :src="place.placeThumbnailImageUrl || place.placeImageUrl || '/placeholder.jpg'" 
+        :src="place.placeImageUrl || place.placeThumbnailImageUrl || '/placeholder.jpg'" 
         :alt="place.placeName" 
         class="w-full h-full object-cover"
       >
@@ -22,10 +22,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Place } from '@/features/place/types/place'
+import type { PlaceSummary } from '@/features/place/types/place'
 
 defineProps<{
-  place: Place
+  place: PlaceSummary
 }>()
 
 defineEmits<{

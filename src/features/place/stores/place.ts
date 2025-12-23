@@ -1,16 +1,32 @@
 import { defineStore } from 'pinia'
-
 import { usePlace } from '@/features/place/composables/usePlace'
 
 export const usePlaceStore = defineStore('place', () => {
-  const { places, fetchPlaces, searchPlaces, isLoading, error, getPlaceById } = usePlace()
+  const {
+    places,
+    place,
+    isLoading,
+    error,
+    getPlace,
+    recommendPlace,
+    fetchPlaces,
+    getPlaceDetail,
+    resetPlace,
+    currentPage,
+    totalPages
+  } = usePlace()
 
   return {
     places,
-    fetchPlaces,
-    searchPlaces,
+    place,
     isLoading,
     error,
-    getPlaceById
+    getPlace,
+    recommendPlace,
+    fetchPlaces,
+    getPlaceDetail,
+    resetPlace,
+    currentPage,
+    totalPages
   }
 })

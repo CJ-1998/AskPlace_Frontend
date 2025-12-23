@@ -5,6 +5,7 @@ import { useToast } from '@/shared/composables/useToast'
 import PlaceDetail from '@/features/place/components/PlaceDetail.vue'
 import NearbyPlaceCard from '@/features/place/components/NearbyPlaceCard.vue'
 import { usePlace } from '@/features/place/composables/usePlace'
+import NavigationBar from '@/shared/components/ui/navigation-bar/NavigationBar.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -50,45 +51,42 @@ const handleAddPlan = () => {
 
 
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <button 
-      @click="router.back()" 
-      class="text-sm text-slate-500 mb-4 hover:text-slate-900"
-    >
-      <i class="fa-solid fa-arrow-left"></i> 목록으로
-    </button>
-
-    <div v-if="isLoading" class="text-center py-12">
-      <p class="text-slate-500">불러오는 중...</p>
-    </div>
-
-    <div v-else-if="error" class="text-center py-12">
-        <p class="text-red-500">{{ error }}</p>
-    </div>
-
-    <PlaceDetail 
-      v-else-if="place"
-      :place="place"
-      @request-live="handleRequestLive"
-      @add-plan="handleAddPlan"
-    >
-      <template #nearby>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             <NearbyPlaceCard 
-                v-for="nearbyPlace in nearbyPlaces" 
-                :key="nearbyPlace.placeId"
-                :place="nearbyPlace"
-                @click="handleNearbyClick"
-             />
-             <div v-if="nearbyPlaces.length === 0" class="col-span-full text-center py-8 text-slate-500">
-                근처 여행지가 없습니다.
-             </div>
-          </div>
-      </template>
-    </PlaceDetail>
-
-    <div v-else class="text-center py-12">
-      <p class="text-slate-500">장소를 찾을 수 없습니다.</p>
+  <div>
+    <NavigationBar :title="place?.placeName" />
+    <div class="container mx-auto px-4 py-8">
+  
+      <div v-if="isLoading" class="text-center py-12">
+        <p class="text-slate-500">불러오는 중...</p>
+      </div>
+  
+      <div v-else-if="error" class="text-center py-12">
+          <p class="text-red-500">{{ error }}</p>
+      </div>
+  
+      <PlaceDetail 
+        v-else-if="place"
+        :place="place"
+        @request-live="handleRequestLive"
+        @add-plan="handleAddPlan"
+      >
+        <template #nearby>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <NearbyPlaceCard 
+                  v-for="nearbyPlace in nearbyPlaces" 
+                  :key="nearbyPlace.placeId"
+                  :place="nearbyPlace"
+                  @click="handleNearbyClick"
+              />
+              <div v-if="nearbyPlaces.length === 0" class="col-span-full text-center py-8 text-slate-500">
+                  근처 여행지가 없습니다.
+              </div>
+            </div>
+        </template>
+      </PlaceDetail>
+  
+      <div v-else class="text-center py-12">
+        <p class="text-slate-500">장소를 찾을 수 없습니다.</p>
+      </div>
     </div>
   </div>
 </template>

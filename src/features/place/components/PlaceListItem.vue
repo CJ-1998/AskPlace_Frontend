@@ -20,7 +20,7 @@ const emit = defineEmits<{
   >
     <div class="relative h-48 w-full">
         <img 
-          :src="place.placeThumbnailImageUrl || place.placeImageUrl || '/placeholder.jpg'" 
+          :src="place.placeImageUrl || place.placeThumbnailImageUrl || '/placeholder.jpg'" 
           :alt="place.placeName" 
           class="w-full h-full object-cover transition-transform hover:scale-105"
         />

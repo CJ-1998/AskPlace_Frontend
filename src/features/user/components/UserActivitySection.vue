@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UserActivity } from '@/features/user/types/user'
-import { Button } from '@/shared/components/ui/button'
+import { Button } from '@ui/button'
 import PlanCard from '@/features/plan/components/PlanCard.vue'
 import PlaceCard from '@/features/place/components/PlaceCard.vue'
 import VideoCard from '@/features/video/components/VideoCard.vue'
@@ -69,7 +69,7 @@ const router = useRouter()
         <div v-if="activity.myPlans.length === 0" class="text-center py-20 bg-slate-50 rounded-lg border border-dashed">
           <Map class="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p class="text-slate-500">아직 작성한 여행 계획이 없습니다.</p>
-          <Button class="mt-4" @click="router.push('/plan/create')">새 계획 만들기</Button>
+          <Button class="mt-4" @click="router.push({ name: 'plan-create' })">새 계획 만들기</Button>
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <PlanCard 
@@ -85,7 +85,7 @@ const router = useRouter()
         <div v-if="activity.likedPlaces.length === 0" class="text-center py-20 bg-slate-50 rounded-lg border border-dashed">
           <Heart class="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p class="text-slate-500">찜한 여행지가 없습니다.</p>
-          <Button class="mt-4" @click="router.push('/search')">여행지 둘러보기</Button>
+          <Button class="mt-4" @click="router.push({ name: 'place-list' })">여행지 둘러보기</Button>
         </div>
          <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <PlaceCard 
@@ -101,7 +101,7 @@ const router = useRouter()
          <div v-if="activity.myVideos.length === 0" class="text-center py-20 bg-slate-50 rounded-lg border border-dashed">
           <Video class="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p class="text-slate-500">업로드한 영상이 없습니다.</p>
-          <Button class="mt-4" @click="router.push('/video/upload')">영상 업로드하기</Button>
+          <Button class="mt-4" @click="router.push({ name: 'video-upload' })">영상 업로드하기</Button>
         </div>
          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <VideoCard 

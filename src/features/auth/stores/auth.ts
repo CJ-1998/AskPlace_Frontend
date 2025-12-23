@@ -8,7 +8,7 @@ import { setAccessToken as clientSetAccessToken } from '@/shared/api/client'
 import router from '@/app/router'
 import { jwtDecode } from 'jwt-decode'
 import type { AccessTokenPayload, UserData } from '@/features/auth/types/auth'
-import type { Place } from '@/features/place/types/place'
+import type { PlaceSummary } from '@/features/place/types/place'
 import type { Plan } from '@/features/plan/types/plan'
 import type { Video } from '@/features/video/types/video'
 
@@ -116,15 +116,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Synchronous getters from loaded state
   // Note: Data must be fetched first for these to work
-  const getPlaceById = (id: number | string) => places.value.find((p: Place) => p.placeId === String(id))
-  const getPlanById = (id: number | string) => plans.value.find((p: Plan) => p.id == Number(id))
-  const getVideoById = (id: number | string) => videos.value.find((v: Video) => v.id == Number(id))
+  const getPlaceById = (id: string) => places.value.find((p: PlaceSummary) => p.placeId === id)
+  const getPlanById = (id: string) => plans.value.find((p: Plan) => p.id === id)
+  const getVideoById = (id: string) => videos.value.find((v: Video) => v.id === id)
 
   const fetchAllData = async () => {
     await Promise.all([
-      placeStore.fetchPlaces(),
+      // placeStore.fetchPlaces(),
       planStore.fetchPlans(),
-      videoStore.fetchVideos()
+      // videoStore.fetchVideos()
     ])
   }
 

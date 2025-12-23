@@ -1,28 +1,41 @@
+import type { ApiResponse } from '@/shared/types/api'
 import { apiClient } from '@/shared/api/client'
-import type { Video } from '@/features/video/types/video'
+import type { Video, VideoPageResponse } from '@/features/video/types/video'
 
-export const videoApi = {
-  async getVideos(params?: any) {
-    const response = await apiClient.get<Video[]>('/videos', { params })
-    return response.data
+export const video = {
+  async getVideos(params?: any): Promise<VideoPageResponse> {
+    // Backend returns ApiResponse<Page<VideoResponse>>
+    const response = await apiClient.get<ApiResponse<VideoPageResponse>>('/videos', { params })
+    return response.data.data
   },
 
-  async getVideoById(id: number) {
-    const response = await apiClient.get<Video>(`/videos/${id}`)
-    return response.data
+  async getVideoDetail(id: string) {
+    // Backend returns ApiResponse<VideoDetailResponseDto>
+    // Assuming VideoDetailResponseDto matches Video type for now or close enough
+    const response = await apiClient.get<ApiResponse<Video>>(`/videos/${id}`)
+    return response.data.data
   },
 
-  async uploadVideo(videoData: FormData) {
-    const response = await apiClient.post<Video>('/videos', videoData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  async saveVideo(videoData: { title: string; description: string; objectKey: string; thumbnailObjectKey?: string; placeId?: string; duration?: number }) {
+    const response = await apiClient.post<ApiResponse<string>>('/videos', videoData)
+    return response.data.data
+  },
+
+  async deleteVideo(id: string) {
+    const response = await apiClient.delete<ApiResponse<void>>(`/videos/${id}`)
+    return response.data.data
+  },
+
+  async initUpload(fileName: string, fileType: string) {
+    // Call /storage/presigned-url
+    interface PresignedUrlResponse {
+        uploadUrl: string;
+        fileName: string; // key
+    }
+    const response = await apiClient.post<ApiResponse<PresignedUrlResponse>>('/storage/presigned-url', {
+        fileName,
+        fileType
     })
-    return response.data
-  },
-
-  async deleteVideo(id: number) {
-    const response = await apiClient.delete(`/videos/${id}`)
-    return response.data
+    return response.data.data
   }
 }

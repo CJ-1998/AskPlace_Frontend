@@ -1,75 +1,88 @@
-// src/app/router.ts
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { useAuthStore } from '@/features/auth/stores/auth'
 import { useModalStore } from '@/shared/stores/modalStore'
 
 const routes: RouteRecordRaw[] = [
+  // --- Home ---
   {
     path: '/',
     name: 'home',
     component: () => import('@/features/home/views/HomePage.vue')
   },
-  {
-    path: '/search',
-    name: 'search',
-    component: () => import('@/features/place/views/PlaceSearchPage.vue')
-  },
-  {
-    path: '/place/:id',
-    name: 'place-detail',
-    component: () => import('@/features/place/views/PlaceDetailPage.vue'),
-    props: true
-  },
-  {
-    path: '/plan',
-    name: 'plan',
-    component: () => import('@/features/plan/views/PlanListPage.vue')
-  },
-  {
-    path: '/plan/:id',
-    name: 'plan-detail',
-    component: () => import('@/features/plan/views/PlanDetailPage.vue'),
-    props: true
-  },
-  {
-    path: '/plan/:planId/day/:day',
-    name: 'plan-day-detail',
-    component: () => import('@/features/plan/views/PlanDayDetailPage.vue'),
-    props: route => ({ 
-      planId: Number(route.params.planId), 
-      day: Number(route.params.day) 
-    })
-  },
-  {
-    path: '/plan/create',
-    name: 'plan-create',
-    component: () => import('@/features/plan/views/PlanCreatePage.vue')
-  },
-  {
-    path: '/video',
-    name: 'video',
-    component: () => import('@/features/video/views/VideoListPage.vue')
-  },
-  {
-    path: '/video/:id',
-    name: 'video-detail',
-    component: () => import('@/features/video/views/VideoDetailPage.vue'),
-    props: route => ({ id: Number(route.params.id) })
-  },
-  {
-    path: '/video/upload',
-    name: 'video-upload',
-    component: () => import('@/features/video/views/VideoUploadPage.vue')
-  },
+  
+  // --- User ---
   {
     path: '/mypage',
     name: 'mypage',
     component: () => import('@/features/user/views/MyPage.vue')
   },
+
+  // --- Place (Search) ---
   {
-    path: '/map',
-    name: 'map',
-    component: () => import('@/features/place/views/MapPage.vue')
+    path: '/places/search',
+    name: 'place-list',
+    component: () => import('@/features/place/views/PlaceSearchPage.vue')
+  },
+  {
+    path: '/places/detail/:id',
+    name: 'place-detail',
+    component: () => import('@/features/place/views/PlaceDetailPage.vue'),
+    props: true
+  },
+
+  // --- Plan ---
+  {
+    path: '/plans',
+    name: 'plan-list',
+    component: () => import('@/features/plan/views/PlanListPage.vue')
+  },
+  {
+    path: '/plans/me',
+    name: 'my-plan-list',
+    component: () => import('@/features/plan/views/MyPlanListPage.vue')
+  },
+  {
+    path: '/plans/create',
+    name: 'plan-create',
+    component: () => import('@/features/plan/views/PlanCreatePage.vue')
+  },
+  {
+    path: '/plans/:id',
+    name: 'plan-detail',
+    component: () => import('@/features/plan/views/PlanDetailPage.vue'),
+    props: true,
+    meta: { hideFooter: true }
+  },
+  {
+    path: '/plans/edit/:id',
+    name: 'plan-edit',
+    component: () => import('@/features/plan/views/PlanEditPage.vue'),
+    props: true,
+    meta: { requiresAuth: true, hideFooter: true }
+  },
+  {
+    path: '/plans/:planId/daily/:day',
+    name: 'daily-plan',
+    component: () => import('@/features/plan/views/DailyPlanView.vue'),
+    meta: { hideFooter: true }
+  },
+
+  // --- Video ---
+  {
+    path: '/videos',
+    name: 'video-list',
+    component: () => import('@/features/video/views/VideoListPage.vue')
+  },
+  {
+    path: '/videos/upload',
+    name: 'video-upload',
+    component: () => import('@/features/video/views/VideoUploadPage.vue')
+  },
+  {
+    path: '/videos/:id',
+    name: 'video-detail',
+    component: () => import('@/features/video/views/VideoDetailPage.vue'),
+    props: route => ({ id: Number(route.params.id) })
   },
 ]
 
@@ -95,7 +108,7 @@ router.beforeEach(async (to, from, next) => {
     await authStore.initAuth()
   }
 
-  const protectedRoutes = ['mypage', 'plan-create', 'video-upload']
+  const protectedRoutes = ['mypage', 'plan-create', 'video-upload', 'my-plan-list', 'plan-edit']
   
   if (protectedRoutes.includes(to.name as string) && !authStore.isLoggedIn) {
     modalStore.openAuth('login')

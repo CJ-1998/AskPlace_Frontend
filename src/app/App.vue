@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
 
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { useAuthStore } from '@/features/auth/stores/auth'
 import { useModalStore } from '@/shared/stores/modalStore'
 
 import AppHeader from '@/shared/components/common/AppHeader.vue'
 import AppFooter from '@/shared/components/common/AppFooter.vue'
 import AuthModal from '@/features/auth/components/AuthModal.vue'
 import ToastNotification from '@/shared/components/common/ToastNotification.vue'
+
+const route = useRoute()
 
 
 const modalStore = useModalStore()
@@ -34,7 +36,7 @@ onMounted(() => {
 
     <ToastNotification />
 
-    <AppFooter />
+    <AppFooter v-if="!route.meta.hideFooter" />
   </div>
 </template>
 

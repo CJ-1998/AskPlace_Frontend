@@ -15,7 +15,7 @@
     </div>
     <CardHeader class="p-4">
       <CardTitle class="text-lg mb-1 group-hover:text-primary">{{ plan.title }}</CardTitle>
-      <CardDescription class="text-sm text-slate-500">{{ plan.author }}님의 여행</CardDescription>
+      <CardDescription class="text-sm text-slate-500">{{ plan.user.name }}님의 여행</CardDescription>
     </CardHeader>
     <CardFooter class="p-4 pt-0 flex gap-2 text-xs text-slate-400">
       <span><i class="fa-solid fa-eye"></i> {{ plan.views }}</span>
@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/components/ui/card'
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@ui/card'
 import type { Plan } from '@/features/plan/types/plan'
 
 const props = defineProps<{

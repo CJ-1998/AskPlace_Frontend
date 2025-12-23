@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useModalStore } from '@/shared/stores/modalStore'
-import { useAuthStore } from '@/features/auth/stores/authStore'
-import { User, LogOut } from 'lucide-vue-next'
+import { useAuthStore } from '@/features/auth/stores/auth'
+import { User, LogOut, Map } from 'lucide-vue-next'
 
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu'
+} from '@ui/dropdown-menu'
 
 import { storeToRefs } from 'pinia'
 
@@ -37,7 +37,7 @@ const userInitial = computed(() => {
 <template>
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-      <router-link to="/" class="flex items-center gap-2 cursor-pointer">
+      <router-link :to="{ name: 'home' }" class="flex items-center gap-2 cursor-pointer">
         <i class="fa-solid fa-plane-departure text-primary text-2xl"></i>
         <img src="@/assets/askPlace.png" alt="Logo" class="w-5 h-5" />
         <span class="text-xl font-bold text-indigo-950">AskPlace</span>
@@ -45,22 +45,22 @@ const userInitial = computed(() => {
 
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
         <router-link 
-          to="/search" 
-          :class="{ 'text-primary': isActive('search') }"
+          :to="{ name: 'place-list' }" 
+          :class="{ 'text-primary': isActive('places') }"
           class="hover:text-primary transition-colors"
         >
           여행지 찾기
         </router-link>
         <router-link 
-          to="/plan" 
-          :class="{ 'text-primary': isActive('plan') }"
+          :to="{ name: 'plan-list' }" 
+          :class="{ 'text-primary': isActive('plans') }"
           class="hover:text-primary transition-colors"
         >
           여행 계획
         </router-link>
         <router-link 
-          to="/video" 
-          :class="{ 'text-primary': isActive('video') }"
+          :to="{ name: 'video-list' }" 
+          :class="{ 'text-primary': isActive('videos') }"
           class="hover:text-primary transition-colors"
         >
           실시간 영상
@@ -68,6 +68,15 @@ const userInitial = computed(() => {
       </nav>
 
       <div class="flex items-center gap-3">
+        <!-- New Upload Button -->
+        <router-link
+          :to="{ name: 'video-upload' }"
+          class="hidden sm:inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-transform hover:-translate-y-0.5 hover:bg-blue-700 active:translate-y-0"
+        >
+          <i class="fa-solid fa-cloud-arrow-up mr-2 text-xs"></i>
+          영상 올리기
+        </router-link>
+
         <template v-if="!isLoggedIn">
           <button 
             @click="openAuthModal('login')" 
@@ -96,9 +105,14 @@ const userInitial = computed(() => {
             <DropdownMenuLabel>내 계정</DropdownMenuLabel>
             <DropdownMenuSeparator />
             
-            <DropdownMenuItem @click="$router.push('/mypage')" class="cursor-pointer">
+            <DropdownMenuItem @click="$router.push({ name: 'mypage' })" class="cursor-pointer">
               <User class="mr-2 h-4 w-4" />
               <span>내 정보</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem @click="$router.push({ name: 'my-plan-list' })" class="cursor-pointer">
+              <Map class="mr-2 h-4 w-4" />
+              <span>내 여행 계획</span>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />

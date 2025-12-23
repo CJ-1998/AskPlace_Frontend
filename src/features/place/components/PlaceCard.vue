@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { Place } from '@/features/place/types/place'
+import type { PlaceSummary } from '@/features/place/types/place'
 import { MapPin, Star } from 'lucide-vue-next'
-import { Card, CardContent } from '@/shared/components/ui/card'
-import { Badge } from '@/shared/components/ui/badge'
+import { Card, CardContent } from '@ui/card'
+import { Badge } from '@ui/badge'
+import placeHolderImage from '@/assets/placeholder.png'
 
 interface Props {
-  place: Place
+  place: PlaceSummary
 }
 
 defineProps<Props>()
@@ -23,7 +24,7 @@ const emit = defineEmits<{
     
     <div class="aspect-[4/3] w-full overflow-hidden relative">
       <img 
-        :src="place.placeImageUrl || place.placeThumbnailImageUrl || '/placeholder.jpg'" 
+        :src=" place.placeThumbnailImageUrl || place.placeImageUrl || placeHolderImage" 
         :alt="place.placeName" 
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
       />
@@ -48,10 +49,10 @@ const emit = defineEmits<{
 
       <div class="flex flex-wrap gap-2">
         <Badge variant="secondary" class="bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-md font-normal px-2 py-1">
-          {{ place.region }}
+          {{ place.placeRegion }}
         </Badge>
         <Badge variant="secondary" class="bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-md font-normal px-2 py-1">
-          {{ place.siGunGu }}
+          {{ place.placeSiGunGu}}
         </Badge>
       </div>
     </CardContent>

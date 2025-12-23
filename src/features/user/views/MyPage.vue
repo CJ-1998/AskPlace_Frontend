@@ -28,7 +28,7 @@ const router = useRouter()
 // onMount때 재처리하도록 함(비효율적)
 onMounted(() => {
   if (!isLoggedIn.value) {
-    router.push('/')
+    router.push({ name: 'home' })
     return
   }
   fetchUserData()

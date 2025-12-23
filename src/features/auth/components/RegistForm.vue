@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Input } from '@/shared/components/ui/input'
-import { Button } from '@/shared/components/ui/button'
+import { Input } from '@ui/input'
+import { Button } from '@ui/button'
 import type { RegistRequest } from '@/features/auth/types/auth'
 
 const emit = defineEmits<{

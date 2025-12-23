@@ -1,3 +1,4 @@
+
 export interface AuthData {
   email: string
   name: string
@@ -24,13 +25,9 @@ export interface UserData {
 // 로그인 응답 타입
 export type LoginResponse = AuthData
 
-// Generic API 응답 인터페이스
-export interface ApiResponse<T> {
-  result: string
-  data: T
-  errorCode: string | null
-  message: string | null
-}
+// Generic API 응답 인터페이스 (Re-export for compatibility)
+export type { ApiResponse } from '@/shared/types/api'
+
 
 // 로그인 요청 인터페이스
 export interface LoginRequest {

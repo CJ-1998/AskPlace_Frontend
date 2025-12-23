@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useModalStore } from '@/shared/stores/modalStore'
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { useAuthStore } from '@/features/auth/stores/auth'
 import {
   Dialog,
   DialogContent,
@@ -9,9 +9,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/dialog'
-import { Button } from '@/shared/components/ui/button'
-import { Separator } from '@/shared/components/ui/separator'
+} from '@ui/dialog'
+import { Button } from '@ui/button'
+import { Separator } from '@ui/separator'
 import RegistForm from './RegistForm.vue'
 import LoginForm from './LoginForm.vue'
 import type { LoginResponse } from '../types/auth'

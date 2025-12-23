@@ -1,12 +1,32 @@
-export interface Video {
-  id: number
-  title: string
-  location: string
-  viewers: string
-  thumbnail: string
-  description?: string
-  uploader?: string
-  uploadTime?: string
-  likes?: number
-  comments?: number
+export interface VideoResponse {
+  id: string;
+  objectKey: string;
+  title: string;
+  description: string;
+  author: string;
+  authorId: string;
+  duration: number; // seconds
+  viewCount: number;
+  placeId: string;
+  createdAt: string;
+  preSignedUrl: string;
+  thumbnailUrl?: string; // Optional because legacy videos might not have it
+}
+
+export type Video = VideoResponse;
+
+export interface VideoPageResponse {
+  content: VideoResponse[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+  };
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  first: boolean;
+  number: number;
+  size: number;
+  numberOfElements: number;
+  empty: boolean;
 }

@@ -28,6 +28,10 @@ export default {
         ring: "var(--ring)",
         background: "var(--background)",
         foreground: "var(--foreground)",
+        brand: {
+          DEFAULT: "#06b6d4", // Cyan-500 from Tailwind/Image
+          foreground: "#ffffff"
+        },
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",

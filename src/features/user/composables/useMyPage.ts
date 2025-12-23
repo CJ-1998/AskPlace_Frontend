@@ -1,16 +1,18 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { useAuthStore } from '@/features/auth/stores/auth'
 import { userApi } from '@/features/user/api/user'
+import { planApi } from '@/features/plan/api/plan'
 import { useToast } from '@/shared/composables/useToast'
 import type { UserProfile, UserActivity } from '@/features/user/types/user'
+import type { TravelPlanResponseDto } from '@/features/plan/types/plan'
 
 export function useMyPage() {
   const store = useAuthStore()
   const router = useRouter()
   const { showToast } = useToast()
-  
+
   const { user, isLoggedIn } = storeToRefs(store)
 
   const isLoading = ref(true)
@@ -47,27 +49,45 @@ export function useMyPage() {
     isLoading.value = true
     try {
       // Parallel fetch for better performance
-      const [profileData, activityData] = await Promise.allSettled([
+      const [profileData, myPlansData] = await Promise.allSettled([
         userApi.getMyProfile(),
-        userApi.getUserActivity()
+        planApi.getMyPlans() // Fetch real plans
       ])
 
       if (profileData.status === 'fulfilled') {
-        // TODO : 콘솔 로그는 배포시에 무조건 제외해야함.
-        console.log('Fetched Profile Data:', profileData.value)
         profile.value = { ...profile.value, ...profileData.value }
         store.updateUserState(profileData.value)
       } else {
-        // TODO : 콘솔 로그는 배포시에 무조건 제외해야함.
         console.error('Failed to fetch profile:', profileData.reason)
       }
 
-      if (activityData.status === 'fulfilled') {
-        activity.value = activityData.value
-      } else {
-        // TODO : 콘솔 로그는 배포시에 무조건 제외해야함.
-        console.error('Failed to fetch activity:', activityData.reason)
+      // Update Activity
+      const newActivity: UserActivity = {
+        myPlans: [],
+        likedPlaces: [],
+        myVideos: []
       }
+
+      if (myPlansData.status === 'fulfilled' && myPlansData.value) {
+        newActivity.myPlans = myPlansData.value.travelPlans.map((dto: TravelPlanResponseDto) => ({
+          id: dto.travelPlanId,
+          title: dto.travelPlanTitle || 'Untitled Plan',
+          description: dto.travelPlanDescription || '',
+          // startDate/endDate not in summary DTO, so we leave them optional/undefined or mock if needed
+          duration: `${dto.travelTotalDays}일`,
+          user: {
+            uuid: dto.user.uuid,
+            name: dto.user.name
+          },
+          // Optional fields not in DTO
+          viewCount: 0,
+        } as unknown as any))
+      } else {
+        console.error('Failed to fetch my plans:', myPlansData.status === 'rejected' ? myPlansData.reason : 'No data')
+      }
+
+      activity.value = newActivity
+
     } finally {
       isLoading.value = false
     }
@@ -90,7 +110,7 @@ export function useMyPage() {
       const updatedProfile = await userApi.updateProfile(profile.value.userUuid, {
         introduction: editForm.value.introduction || ''
       })
-      
+
       profile.value = updatedProfile
       store.updateUserState(updatedProfile)
       showToast('프로필이 수정되었습니다.', 'success')
@@ -127,7 +147,7 @@ export function useMyPage() {
     editForm,
     activity,
     isLoggedIn,
-    
+
     // Actions
     fetchUserData,
     startEdit,

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import MapView from '@/shared/components/common/MapView.vue'
-import type { Place } from '@/features/place/types/place'
+import SinglePlaceMap from '@/shared/components/map/SinglePlaceMap.vue'
+import type { PlaceDetail } from '@/features/place/types/place'
+import placeHolderImage from '@/assets/placeholder.png'
 
 defineProps<{
-  place: Place
+  place: PlaceDetail
 }>()
 
 defineEmits<{
@@ -17,7 +18,7 @@ defineEmits<{
     <!-- Header Image -->
     <div class="h-64 md:h-80 relative">
       <img 
-        :src="place.placeImageUrl" 
+        :src="place.placeImageUrl || placeHolderImage" 
         :alt="place.placeName"
         class="w-full h-full object-cover"
       >
@@ -40,23 +41,22 @@ defineEmits<{
         </div>
         <div class="bg-slate-50 p-3 rounded-lg text-center">
           <div class="text-xs text-slate-400">시/군/구</div>
-          <div class="font-bold">{{ place.siGunGu || '-' }}</div>
-        </div>
-        <!-- Todo : 입장료, 주차 구현 필요 -->
-        <div class="bg-slate-50 p-3 rounded-lg text-center">
-          <div class="text-xs text-slate-400">입장료</div>
-          <div class="font-bold">{{ '무료' }}</div>
+          <div class="font-bold">{{ place.siGunGu|| '-' }}</div>
         </div>
         <div class="bg-slate-50 p-3 rounded-lg text-center">
-          <div class="text-xs text-slate-400">주차</div>
-          <div class="font-bold">{{ '가능' }}</div>
+          <div class="text-xs text-slate-400">전화번호</div>
+          <div class="font-bold">{{place.placePhoneNumber || '-'}}</div>
         </div>
-       
+      
       </div>
 
-       <!-- Map Section -->
+      <!-- Map Section -->
       <div class="mb-8 h-64 md:h-80 bg-slate-100 rounded-xl overflow-hidden border border-slate-200">
-        <MapView :lat="place.latitude || 37.5665" :lng="place.longitude || 126.9780" />
+        <SinglePlaceMap 
+          :lat="place.latitude || 37.5665" 
+          :lng="place.longitude || 126.9780" 
+          :place-name="place.placeName"
+        />
       </div>
 
       <!-- Action Buttons -->
@@ -81,7 +81,7 @@ defineEmits<{
           <p class="text-slate-600 leading-relaxed">{{ place.placeDescription }}</p>
       </div>
 
-       <!-- Nearby Places Slot or Component -->
+      <!-- Nearby Places Slot or Component -->
       <div>
         <h3 class="text-xl font-bold mb-4 text-slate-800">근처 여행지</h3>
         <slot name="nearby"></slot>
