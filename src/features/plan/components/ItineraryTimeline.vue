@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { TravelPlan, PlaceDetail } from '@/features/plan/types/plan'
 import TripSummary from '@/features/plan/components/TripSummary.vue'
-import { Card, CardContent } from '@ui/card'
+import PlacePlanItem from '@/features/plan/components/PlacePlanItem.vue'
 import { Badge } from '@ui/badge'
 import { Separator } from '@ui/separator'
 import { Button } from '@/shared/components/ui/button'
 import { useRouter } from 'vue-router'
-
-import { getPlaceIcon, getCategoryName } from '@/features/plan/utils/planMappers'
 
 const props = defineProps<{
   plan: TravelPlan | null
@@ -64,40 +62,17 @@ const router = useRouter()
       </div>
 
       <!-- Places Timeline -->
-      <div class="space-y-4 ml-2 border-l-2 border-slate-100 pl-6 relative">
+      <div class="ml-2 pl-0 relative">
         <div 
             v-for="(place, pIndex) in day.placeDetails" 
             :key="place.placeDetailId"
-            class="relative group"
+            class="group mb-1"
             @click="emit('click-place', place)"
         >
-            <!-- Timeline Connectors -->
-             <div 
-                class="absolute -left-[31px] top-6 w-4 h-4 rounded-full border-[3px] border-white shadow-sm transition-all z-10"
-                :class="[pIndex === 0 ? 'bg-brand scale-110' : 'bg-slate-300 group-hover:bg-brand group-hover:scale-110']"
-            ></div>
-
-            <!-- Place Card -->
-            <Card class="hover:border-brand cursor-pointer transition-all hover:shadow-md group-hover:-translate-y-0.5">
-                <CardContent class="p-4">
-                    <div class="flex justify-between items-start mb-2">
-                        <Badge variant="secondary" class="text-xs font-medium text-slate-500 bg-slate-100 group-hover:text-brand group-hover:bg-brand/10 transition-colors">
-                            <i :class="[getPlaceIcon(place.contentTypeId), 'mr-1.5']"></i>
-                            {{ getCategoryName(place.contentTypeId) }}
-                        </Badge>
-                        <span class="text-[10px] text-slate-300 font-mono font-bold">#{{ place.order }}</span>
-                    </div>
-                    
-                    <h4 class="font-bold text-slate-800 text-base mb-1 group-hover:text-brand transition-colors line-clamp-1">
-                        {{ place.placeName }}
-                    </h4>
-                    
-                    <div class="text-xs text-slate-400 flex items-center gap-1">
-                       <i class="fa-solid fa-location-arrow text-[10px] opacity-50"></i> 
-                       <span>지도에서 위치 확인</span>
-                    </div>
-                </CardContent>
-            </Card>
+            <PlacePlanItem 
+                :place="place" 
+                :is-last="pIndex === day.placeDetails.length - 1" 
+            />
         </div>
       </div>
     </div>

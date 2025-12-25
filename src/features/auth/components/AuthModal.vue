@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useModalStore } from '@/shared/stores/modalStore'
 import { useAuthStore } from '@/features/auth/stores/auth'
+import askPlaceLogo from '@/assets/askPlace.png'
 import {
   Dialog,
   DialogContent,
@@ -63,7 +64,7 @@ const handleRegist = async (data: any) => {
     <DialogContent class="sm:max-w-md p-8">
       <DialogHeader class="text-center mb-4">
         <div class="flex justify-center mb-4">
-             <i class="fa-solid fa-plane-departure text-primary text-4xl"></i>
+             <img :src="askPlaceLogo" alt="AskPlace Logo" class="h-12 w-auto" />
         </div>
         <DialogTitle class="text-2xl font-bold text-center">{{ title }}</DialogTitle>
         <DialogDescription class="text-center">{{ description }}</DialogDescription>
@@ -81,7 +82,7 @@ const handleRegist = async (data: any) => {
         class="mb-6"
       />
 
-      <div class="relative flex py-2 items-center mb-6">
+      <!-- <div class="relative flex py-2 items-center mb-6">
         <Separator class="flex-1" />
         <span class="flex-shrink-0 mx-4 text-slate-400 text-xs">또는 소셜 계정으로 시작</span>
         <Separator class="flex-1" />
@@ -97,7 +98,7 @@ const handleRegist = async (data: any) => {
         <Button variant="outline" class="w-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 py-5 h-5">
              <i class="fa-brands fa-google mr-2"></i> Google로 시작하기
         </Button>
-      </div>
+      </div> -->
       
       <DialogFooter class="sm:justify-center mt-6">
           <p class="text-center text-xs text-slate-400">

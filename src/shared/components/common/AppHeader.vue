@@ -38,7 +38,6 @@ const userInitial = computed(() => {
   <header class="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur">
     <div class="container mx-auto px-4 h-16 flex items-center justify-between">
       <router-link :to="{ name: 'home' }" class="flex items-center gap-2 cursor-pointer">
-        <i class="fa-solid fa-plane-departure text-primary text-2xl"></i>
         <img src="@/assets/askPlace.png" alt="Logo" class="w-5 h-5" />
         <span class="text-xl font-bold text-indigo-950">AskPlace</span>
       </router-link>

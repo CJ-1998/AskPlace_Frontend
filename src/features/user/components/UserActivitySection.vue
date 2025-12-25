@@ -2,8 +2,9 @@
 import type { UserActivity } from '@/features/user/types/user'
 import { Button } from '@ui/button'
 import PlanCard from '@/features/plan/components/PlanCard.vue'
-import PlaceCard from '@/features/place/components/PlaceCard.vue'
 import VideoCard from '@/features/video/components/VideoCard.vue'
+import WishlistCard from '@/features/user/components/WishlistCard.vue'
+import { useWishlist } from '@/shared/composables/useWishlist'
 import { Map, Heart, Video } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
@@ -20,6 +21,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const { savedPlaces } = useWishlist()
 </script>
 
 <template>
@@ -80,16 +82,16 @@ const router = useRouter()
         </div>
       </div>
 
-      <!-- 찜한 여행지 탭 내용 -->
+      <!-- 찜한 여행지 탭 내용 (Local Wishlist) -->
       <div v-if="activeTab === 'places'" class="space-y-6">
-        <div v-if="activity.likedPlaces.length === 0" class="text-center py-20 bg-slate-50 rounded-lg border border-dashed">
+        <div v-if="savedPlaces.length === 0" class="text-center py-20 bg-slate-50 rounded-lg border border-dashed">
           <Heart class="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <p class="text-slate-500">찜한 여행지가 없습니다.</p>
-          <Button class="mt-4" @click="router.push({ name: 'place-list' })">여행지 둘러보기</Button>
+          <p class="text-slate-500">아직 찜한 여행지가 없습니다.</p>
+          <Button class="mt-4" @click="router.push({ name: 'place-search' })">여행지 둘러보기</Button>
         </div>
-         <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PlaceCard 
-            v-for="place in activity.likedPlaces" 
+         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <WishlistCard 
+            v-for="place in savedPlaces" 
             :key="place.placeId" 
             :place="place"
           />
@@ -104,7 +106,7 @@ const router = useRouter()
           <Button class="mt-4" @click="router.push({ name: 'video-upload' })">영상 업로드하기</Button>
         </div>
          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <VideoCard 
+          <VideoCard
             v-for="video in activity.myVideos" 
             :key="video.id" 
             :video="video"

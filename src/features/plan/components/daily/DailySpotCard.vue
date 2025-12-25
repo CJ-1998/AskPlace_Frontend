@@ -33,7 +33,7 @@ const formattedFee = computed(() => {
         <!-- Live Badge if available -->
         <div v-if="spot.isLiveVideoAvailable" class="absolute top-2 left-2 z-10">
            <span class="flex items-center gap-1.5 bg-red-600/90 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full font-bold shadow-sm animate-pulse">
-             <span class="w-1.5 h-1.5 bg-white rounded-full"></span> LIVE
+             <span class="w-1.5 h-1.5 bg-white rounded-full"></span> ACTIVE
            </span>
         </div>
       </div>

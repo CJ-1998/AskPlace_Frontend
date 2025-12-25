@@ -19,9 +19,9 @@ export const useNaverMap = () => {
       return
     }
     const defaultOptions = {
-        center: new window.naver.maps.LatLng(37.5665, 126.9780),
-        zoom: 14,
-        ...options
+      center: new window.naver.maps.LatLng(37.5665, 126.9780),
+      zoom: 14,
+      ...options
     }
     mapInstance.value = new window.naver.maps.Map(container, defaultOptions)
   }
@@ -67,8 +67,27 @@ export const useNaverMap = () => {
 
   // 5. Utility: Create LatLng
   const createLatLng = (lat: number, lng: number) => {
-      if (!window.naver) return null
-      return new window.naver.maps.LatLng(lat, lng)
+    if (!window.naver) return null
+    return new window.naver.maps.LatLng(lat, lng)
+  }
+
+  // 6. Create InfoWindow
+  const createInfoWindow = (content: string) => {
+    if (!window.naver) return null
+    return new window.naver.maps.InfoWindow({
+      content: content,
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+      borderWidth: 0,
+      disableAnchor: false,
+      pixelOffset: new window.naver.maps.Point(0, -10)
+    })
+  }
+
+  // 7. Add Listener
+  const addListener = (target: any, event: string, handler: (e: any) => void) => {
+    if (!window.naver) return null
+    return window.naver.maps.Event.addListener(target, event, handler)
   }
 
   return {
@@ -77,6 +96,8 @@ export const useNaverMap = () => {
     addMarker,
     addPolyline,
     fitBounds,
-    createLatLng
+    createLatLng,
+    createInfoWindow,
+    addListener
   }
 }

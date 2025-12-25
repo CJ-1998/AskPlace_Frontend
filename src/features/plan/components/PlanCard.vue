@@ -1,6 +1,6 @@
 <template>
   <Card 
-    class="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
+    class="overflow-hidden bg-white border border-slate-200 shadow-sm rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group p-0 gap-0"
     @click="handleClick"
   >
     <div class="h-40 relative overflow-hidden">
@@ -18,8 +18,8 @@
       <CardDescription class="text-sm text-slate-500">{{ plan.user.name }}님의 여행</CardDescription>
     </CardHeader>
     <CardFooter class="p-4 pt-0 flex gap-2 text-xs text-slate-400">
-      <span><i class="fa-solid fa-eye"></i> {{ plan.views }}</span>
-      <span><i class="fa-solid fa-heart"></i> {{ plan.likes }}</span>
+      <!-- <span><i class="fa-solid fa-eye"></i> {{ plan.views }}</span>
+      <span><i class="fa-solid fa-heart"></i> {{ plan.likes }}</span> -->
     </CardFooter>
   </Card>
 </template>

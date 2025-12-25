@@ -14,17 +14,22 @@ export function useVideoList() {
   const size = ref(12)
   const totalPages = ref(0)
   const currentRegion = ref('all')
+  const currentPlaceId = ref<string | undefined>(undefined)
 
   // Fetch Query
   const fetchVideos = async (pageNumber: number) => {
     try {
       loading.value = true
       const regionParam = currentRegion.value === 'all' ? undefined : currentRegion.value
+      const placeIdParam = currentPlaceId.value
+
       const params = {
         page: pageNumber,
         size: size.value,
         region: regionParam,
+        placeId: placeIdParam
       };
+      
       const response: VideoPageResponse = await video.getVideos(params)
       
       videos.value = response.content
@@ -52,11 +57,15 @@ export function useVideoList() {
 
   // Initialize & Watch
   const init = () => {
-    watch(() => route.query.region, (newRegion) => {
-      const region = newRegion as string || 'all'
+    watch(() => route.query, (newQuery) => {
+      const region = newQuery.region as string || 'all'
+      const placeId = newQuery.placeId as string || undefined
+      
       currentRegion.value = region
+      currentPlaceId.value = placeId
+      
       fetchVideos(0) 
-    }, { immediate: true })
+    }, { immediate: true, deep: true })
   }
 
   return {
@@ -65,6 +74,7 @@ export function useVideoList() {
     page,
     totalPages,
     currentRegion,
+    currentPlaceId,
     fetchVideos,
     changePage,
     selectRegion,

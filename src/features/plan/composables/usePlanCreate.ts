@@ -1,7 +1,8 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from '@/shared/composables/useToast'
 import { usePlanStore } from '@/features/plan/stores/plan'
+import { placeApi } from '@/features/place/api/place'
 import type { Place, PlaceSummary, PlaceDetail } from '@/features/place/types/place'
 import type {
   TravelPlanRequestDto,
@@ -25,6 +26,7 @@ export function usePlanCreate() {
   const authStore = useAuthStore()
 
   const title = ref('나의 즐거운 여행')
+  const description = ref('')
   const isReadOnly = ref(false)
 
   const now = today(getLocalTimeZone())
@@ -40,6 +42,79 @@ export function usePlanCreate() {
   const dailyPlans = ref<Place[][]>([
     [],
   ])
+
+  // Track fetching IDs to prevent duplicate requests
+  const fetchingPlaceIds = new Set<string>()
+
+  // Watch for Wishlist Placeholders (Optimistic UI -> Real Data)
+  watch(dailyPlans, async (newPlans) => {
+    for (let dayIndex = 0; dayIndex < newPlans.length; dayIndex++) {
+      const dayPlaces = newPlans[dayIndex]
+      
+      for (let placeIndex = 0; placeIndex < dayPlaces.length; placeIndex++) {
+        const place = dayPlaces[placeIndex]
+        
+        // Check for flag
+        if (place.isWishlistPlaceholder && !fetchingPlaceIds.has(String(place.placeId))) {
+          const id = String(place.placeId)
+          fetchingPlaceIds.add(id)
+          
+          try {
+            const detail = await placeApi.getPlaceDetail(id)
+            
+            // Normalize to PlaceDetail
+            const fullPlace: PlaceDetail = {
+              placeId: detail.placeId,
+              placeName: detail.placeName,
+              placeAddress: detail.placeAddress,
+              latitude: detail.latitude,
+              longitude: detail.longitude,
+              placeImageUrl: detail.placeImageUrl,
+              placeThumbnailImageUrl: detail.placeThumbnailImageUrl,
+              contentId: detail.contentId,
+              contentTypeId: detail.contentTypeId,
+              region: detail.region,
+              siGunGu: detail.siGunGu,
+              placeDescription: detail.placeDescription,
+              // Maintain existing user inputs if any (unlikely for fresh drop but good practice)
+              startTime: place.startTime,
+              endTime: place.endTime,
+              budget: place.budget,
+              durationMinutes: place.durationMinutes,
+              memo: place.memo
+            }
+
+            // Update in place
+            // Need to find index again in case it shifted? 
+            // Since we are iterating, we have index, but async await might shift things.
+            // Safer to find by object reference or ID AND placeholder flag
+            if (dailyPlans.value[dayIndex][placeIndex] === place) {
+                 dailyPlans.value[dayIndex][placeIndex] = fullPlace
+            } else {
+                // Fallback: Find it
+                const currentPlaceIndex = dailyPlans.value[dayIndex].findIndex(p => p.placeId === place.placeId && p.isWishlistPlaceholder)
+                 if (currentPlaceIndex !== -1) {
+                     dailyPlans.value[dayIndex][currentPlaceIndex] = fullPlace
+                 }
+            }
+
+            // showToast(`${place.placeName} 정보를 불러왔습니다.`, 'success') // Optional noise
+          } catch (error) {
+            console.error('Failed to hydrate wishlist item', error)
+            showToast('여행지 정보를 불러오는데 실패했습니다.', 'error')
+            // Remove the broken item? Or leave as placeholder?
+            // Removing is safer to avoid sending bad data
+            const currentPlaceIndex = dailyPlans.value[dayIndex].findIndex(p => p.placeId === place.placeId && p.isWishlistPlaceholder)
+            if (currentPlaceIndex !== -1) {
+                dailyPlans.value[dayIndex].splice(currentPlaceIndex, 1)
+            }
+          } finally {
+            fetchingPlaceIds.delete(id)
+          }
+        }
+      }
+    }
+  }, { deep: true })
 
   // Check for Draft Plan from CreateDialog
   if (planStore.draftPlan) {
@@ -90,6 +165,7 @@ export function usePlanCreate() {
 
     planId.value = id
     title.value = plan.title
+    description.value = plan.description || ''
 
     try {
       if (plan.startDate && plan.endDate) {
@@ -140,6 +216,13 @@ export function usePlanCreate() {
     if (isReadOnly.value) {
       showToast('권한이 없습니다.')
       return
+    }
+
+    // Check for any remaining placeholders
+    const hasPlaceholders = dailyPlans.value.some(day => day.some(p => p.isWishlistPlaceholder))
+    if (hasPlaceholders) {
+         showToast('장소 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'error')
+         return
     }
 
     if (!dateRange.value.start) {
@@ -202,6 +285,7 @@ export function usePlanCreate() {
 
   return {
     title,
+    description,
     dateRange,
     dailyPlans,
     addDay,
@@ -210,6 +294,37 @@ export function usePlanCreate() {
     handleSave,
     loadPlanData,
     isEditMode: computed(() => !!planId.value),
-    isReadOnly // Exported
+    isReadOnly, // Exported
+    planStats: computed(() => {
+      let totalBudget = 0
+      let totalDuration = 0
+      let totalSpots = 0
+
+      dailyPlans.value.forEach(day => {
+        day.forEach(place => {
+          totalBudget += place.budget || 0
+          
+          let duration = place.durationMinutes || 0
+          if (duration === 0 && place.startTime && place.endTime) {
+            const [sh, sm] = place.startTime.split(':').map(Number)
+            const [eh, em] = place.endTime.split(':').map(Number)
+            const startM = sh * 60 + sm
+            const endM = eh * 60 + em
+            let diff = endM - startM
+            if (diff < 0) diff += 24 * 60 // Handle midnight crossover
+            duration = diff
+          }
+          
+          totalDuration += duration
+          totalSpots++
+        })
+      })
+
+      return {
+        totalBudget,
+        totalDuration,
+        totalSpots
+      }
+    })
   }
 }

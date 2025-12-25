@@ -92,10 +92,20 @@ const clearSelectedPlace = () => {
   <div class="container mx-auto py-10 px-4 max-w-2xl">
     <Card>
       <CardHeader>
-        <CardTitle class="text-2xl">Upload Video</CardTitle>
-        <CardDescription>Share your travel moments with the world.</CardDescription>
+        <CardTitle class="text-2xl">동영상 업로드</CardTitle>
+        <CardDescription>여행지의 순간을 공유하세요. <br /> 장소를 선택하고 영상을 업로드하면 이용자 분들께 도움이 됩니다.</CardDescription>
       </CardHeader>
       <CardContent class="space-y-6">
+
+        <!-- Guide Box -->
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+          <h4 class="font-bold text-blue-900 mb-2 text-sm">💡 업로드 가이드</h4>
+          <ul class="text-xs text-blue-800 space-y-1 list-disc list-inside">
+            <li>촬영한 동영상 파일을 선택해주세요. (최대 500MB)</li>
+            <li>영상 제목과 상세 설명을 입력해주세요.</li>
+            <li><b>장소 선택은 필수입니다.</b> 영상이 촬영된 장소를 검색하여 지정해주세요.</li>
+          </ul>
+        </div>
         
         <!-- File Drop Zone -->
         <div 
@@ -108,10 +118,10 @@ const clearSelectedPlace = () => {
           @click="fileInput?.click()"
         >
           <UploadCloud class="w-12 h-12 mx-auto text-slate-400 mb-4" />
-          <h3 class="text-lg font-medium text-slate-700">Drag & Drop your video here</h3>
-          <p class="text-sm text-slate-500 mb-2">or click to browse</p>
+          <h3 class="text-lg font-medium text-slate-700">동영상을 이곳에 드래그하세요</h3>
+          <p class="text-sm text-slate-500 mb-2">또는 클릭하여 파일 선택</p>
           <p class="text-xs text-red-500 font-medium mt-4">
-            * Max 500MB, MP4/MOV only
+            * 최대 500MB, MP4/MOV 형식만 지원
           </p>
           <input 
             type="file" 
@@ -145,18 +155,18 @@ const clearSelectedPlace = () => {
         <!-- Metadata Inputs -->
         <div class="space-y-4">
           <div class="space-y-2">
-            <label class="text-sm font-medium">Title <span class="text-red-500">*</span></label>
-            <Input v-model="title" placeholder="Enter video title" :disabled="isUploading" />
+            <label class="text-sm font-medium">제목 <span class="text-red-500">*</span></label>
+            <Input v-model="title" placeholder="영상 제목을 입력하세요" :disabled="isUploading" />
           </div>
           
           <div class="space-y-2">
-            <label class="text-sm font-medium">Description</label>
-            <Textarea v-model="description" placeholder="What's this video about?" :disabled="isUploading" />
+            <label class="text-sm font-medium">설명</label>
+            <Textarea v-model="description" placeholder="영상에 대한 설명을 입력하세요" :disabled="isUploading" />
           </div>
 
           <!-- Location (Place Search) -->
           <div class="space-y-2 relative">
-            <label class="text-sm font-medium">Location <span class="text-red-500">*</span></label>
+            <label class="text-sm font-medium">장소 선택 <span class="text-red-500">*</span></label>
             
             <!-- Selected Place Display -->
             <div v-if="selectedPlace" class="flex items-center justify-between p-3 border rounded-md bg-blue-50 border-blue-200">
@@ -173,7 +183,7 @@ const clearSelectedPlace = () => {
             <div v-else class="relative">
               <Input 
                 v-model="placeSearchQuery" 
-                placeholder="Search for a place (e.g. Seoul Tower)" 
+                placeholder="장소 검색 (예: 서울타워)" 
                 :disabled="isUploading"
                 @input="handlePlaceSearch"
               />
@@ -198,7 +208,7 @@ const clearSelectedPlace = () => {
                 v-else-if="showPlaceResults && placeSearchQuery.length > 1"
                 class="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg p-4 text-center text-sm text-slate-500"
               >
-                No places found.
+                장소를 찾을 수 없습니다.
               </div>
             </div>
           </div>
@@ -208,10 +218,10 @@ const clearSelectedPlace = () => {
         <div v-if="isUploading" class="space-y-2">
           <div class="flex justify-between text-xs font-medium text-slate-600">
             <span>
-              <span v-if="uploadStep === 'preparing'">Preparing...</span>
-              <span v-else-if="uploadStep === 'uploading'">Uploading... {{ uploadProgress }}%</span>
-              <span v-else-if="uploadStep === 'saving'">Saving...</span>
-              <span v-else-if="uploadStep === 'completed'" class="text-green-600">Done!</span>
+              <span v-if="uploadStep === 'preparing'">준비 중...</span>
+              <span v-else-if="uploadStep === 'uploading'">업로드 중... {{ uploadProgress }}%</span>
+              <span v-else-if="uploadStep === 'saving'">저장 중...</span>
+              <span v-else-if="uploadStep === 'completed'" class="text-green-600">완료!</span>
             </span>
             <span>{{ uploadProgress }}%</span>
           </div>
@@ -230,7 +240,7 @@ const clearSelectedPlace = () => {
           @click="handleUpload"
         >
           <Loader2 v-if="isUploading" class="w-4 h-4 mr-2 animate-spin" />
-          {{ isUploading ? 'Uploading...' : 'Upload Video' }}
+          {{ isUploading ? '업로드 중...' : '업로드 하기' }}
         </Button>
 
       </CardContent>

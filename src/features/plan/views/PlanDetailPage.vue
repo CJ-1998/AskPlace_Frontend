@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { usePlanStore } from '@/features/plan/stores/plan'
 import type { PlaceDetail } from '@/features/plan/types/plan'
@@ -10,12 +10,12 @@ import { ScrollArea } from '@ui/scroll-area'
 import { useAuthStore } from '@/features/auth/stores/auth'
 import { Button } from '@ui/button'
 import { ArrowLeft } from 'lucide-vue-next'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { usePlanInteraction } from '@/features/plan/composables/usePlanInteraction'
+import { getPlaceIcon, getCategoryName } from '@/features/plan/utils/planMappers'
 
 const route = useRoute()
-const planId = route.params.id as string
 const router = useRouter()
+const planId = route.params.id as string
 
 const planStore = usePlanStore()
 const authStore = useAuthStore()
@@ -24,8 +24,6 @@ const { currentPlan, isLoading } = storeToRefs(planStore)
 const isOwner = computed(() => {
   return String(currentPlan.value?.user.uuid) === String(authStore.user?.uuid)
 })
-
-import { usePlanInteraction } from '@/features/plan/composables/usePlanInteraction'
 
 const { handleDelete, handleClone, handleEdit } = usePlanInteraction()
 
@@ -87,14 +85,15 @@ onMounted(() => {
         <div class="absolute top-4 right-4 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-lg text-[10px] md:text-xs z-10 border border-slate-200 hidden md:block">
             <div class="font-bold mb-1 border-b pb-1 text-slate-600">Legend</div>
             <div class="grid grid-cols-2 gap-x-3 gap-y-1">
-                <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-brand"></div> 관광지</div>
-                <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-brand opacity-80"></div> 식당</div>
-                <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-brand opacity-60"></div> 숙소</div>
+                <div v-for="typeId in ['12', '14', '32', '39', '28', '38']" :key="typeId" class="flex items-center gap-1.5">
+                    <i :class="[getPlaceIcon(typeId), 'text-brand w-4 text-center']"></i> 
+                    {{ getCategoryName(typeId) }}
+                </div>
             </div>
         </div>
       </main>
 
-      <aside class="w-full h-full md:w-[400px] md:h-full bg-white border-t md:border-t-0 md:border-r border-slate-200 z-20 order-2 md:order-1 flex flex-col overflow-hidden shadow-xl md:shadow-none rounded-t-2xl md:rounded-none -mt-4 md:mt-0">
+      <aside class="w-full h-full md:w-[600px] md:h-full bg-white border-t md:border-t-0 md:border-r border-slate-200 z-20 order-2 md:order-1 flex flex-col overflow-hidden shadow-xl md:shadow-none rounded-t-2xl md:rounded-none -mt-4 md:mt-0">
          <ScrollArea class="h-full w-full">
             <div class="p-6 md:p-6 pb-20 md:pb-6">
                <ItineraryTimeline 

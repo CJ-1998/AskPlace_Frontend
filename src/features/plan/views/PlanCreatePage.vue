@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { usePlanCreate } from '@/features/plan/composables/usePlanCreate'
 import PlanCreateHeader from '@/features/plan/components/PlanCreateHeader.vue'
 import PlaceSidebar from '@/features/plan/components/PlaceSidebar.vue'
@@ -12,8 +13,17 @@ const {
   addDay,
   addToItinerary,
   removePlace,
-  handleSave
+  handleSave,
+  planStats
 } = usePlanCreate()
+
+const addedPlaceIds = computed(() => {
+  const ids = new Set<string>()
+  dailyPlans.value.forEach(day => {
+    day.forEach(place => ids.add(String(place.placeId)))
+  })
+  return ids
+})
 
 const handleAddPlace = (place: PlaceSummary) => {
   addToItinerary(place)
@@ -30,17 +40,21 @@ const handleRemovePlace = (dayIndex: number, placeIndex: number) => {
     <PlanCreateHeader 
       v-model:title="title"
       v-model:dateRange="dateRange"
-
+      :stats="planStats"
       @save="handleSave"
     />
     
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
-      <PlaceSidebar @add-place="handleAddPlace" />
+      <PlaceSidebar 
+        :added-place-ids="addedPlaceIds"
+        @add-place="handleAddPlace" 
+      />
       
       <!-- Board -->
       <ItineraryBoard 
         v-model:dailyPlans="dailyPlans"
+        :start-date="dateRange.start"
         @add-day="addDay"
         @remove-place="handleRemovePlace"
       />

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { usePlanCreate } from '@/features/plan/composables/usePlanCreate'
 import PlaceSidebar from '@/features/plan/components/PlaceSidebar.vue'
 import ItineraryBoard from '@/features/plan/components/ItineraryBoard.vue'
@@ -10,9 +10,11 @@ import { Settings2 } from 'lucide-vue-next'
 import type { PlaceSummary } from '@/features/place/types/place'
 
 const route = useRoute()
+const router = useRouter()
 
 const {
   title,
+  description,
   dateRange,
   dailyPlans,
   addDay,
@@ -22,6 +24,14 @@ const {
   isEditMode,
   isReadOnly,
 } = usePlanCreate()
+
+const addedPlaceIds = computed(() => {
+  const ids = new Set<string>()
+  dailyPlans.value.forEach(day => {
+    day.forEach(place => ids.add(String(place.placeId)))
+  })
+  return ids
+})
 
 const planId = route.params.id as string
 
@@ -35,7 +45,7 @@ const handleRemovePlace = (dayIndex: number, placeIndex: number) => {
 
 const handlePlanUpdated = () => {
   if (planId) {
-    loadPlanData(planId)
+    router.push({ name: 'plan-detail', params: { id: planId } })
   }
 }
 
@@ -65,10 +75,11 @@ onMounted(() => {
            :plan-id="planId"
            :initial-data="{ 
               title, 
-              description: '', 
+              description: description || '', 
               startDate: dateRange.start?.toString() || '', 
               endDate: dateRange.end?.toString() || '' 
            }"
+           :current-daily-plans="dailyPlans"
            @updated="handlePlanUpdated"
          >
            <Button variant="outline" size="sm" class="gap-2">
@@ -83,6 +94,7 @@ onMounted(() => {
       <!-- Sidebar (Hidden in Read-only for View Mode) -->
       <PlaceSidebar 
         v-if="!isReadOnly"
+        :added-place-ids="addedPlaceIds"
         @add-place="handleAddPlace" 
       />
       

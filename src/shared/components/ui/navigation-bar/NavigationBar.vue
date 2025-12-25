@@ -29,7 +29,7 @@ const router = useRouter()
       </Button>
     </div>
     
-    <div v-if="title" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-semibold text-foreground text-sm">
+    <div v-if="title" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-semibold text-foreground text-lg">
       {{ title }}
     </div>
 

@@ -1,27 +1,72 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import SinglePlaceMap from '@/shared/components/map/SinglePlaceMap.vue'
 import type { PlaceDetail } from '@/features/place/types/place'
 import placeHolderImage from '@/assets/placeholder.png'
+import { Heart } from 'lucide-vue-next'
+import { useWishlist } from '@/shared/composables/useWishlist'
+import { getContentTypeLabel } from '@/features/place/utils/contentTypeMapper'
 
-defineProps<{
+const router = useRouter()
+
+const props = defineProps<{
   place: PlaceDetail
+  nearbyPlaces?: PlaceDetail[]
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'request-live'): void
   (e: 'add-plan'): void
 }>()
+
+const { isInWishlist, toggleWishlist } = useWishlist()
+
+const handleWishlistClick = () => {
+  toggleWishlist({
+    placeId: props.place.placeId,
+    placeName: props.place.placeName,
+    category: getContentTypeLabel(props.place.contentTypeId),
+    address: props.place.placeAddress,
+    thumbnailUrl: props.place.placeThumbnailImageUrl || props.place.placeImageUrl || placeHolderImage
+  })
+}
+
+const mapMarkers = computed(() => {
+    if (!props.nearbyPlaces) return []
+    return props.nearbyPlaces.map(p => ({
+        lat: p.latitude,
+        lng: p.longitude,
+        title: p.placeName,
+        id: p.placeId
+    }))
+})
+
+const handleMarkerClick = (id: string) => {
+    router.push({ name: 'place-detail', params: { id } })
+}
 </script>
 
 <template>
   <div class="bg-white rounded-2xl overflow-hidden border shadow-sm">
     <!-- Header Image -->
-    <div class="h-64 md:h-80 relative">
+    <div class="h-64 md:h-80 relative group">
       <img 
         :src="place.placeImageUrl || placeHolderImage" 
         :alt="place.placeName"
         class="w-full h-full object-cover"
       >
+      <!-- Wishlist Toggle -->
+      <button 
+        @click="handleWishlistClick"
+        class="absolute top-4 right-4 z-10 p-3 rounded-full bg-white/20 backdrop-blur-md hover:bg-white transition-all shadow-sm group-hover:opacity-100"
+      >
+        <Heart 
+          class="w-6 h-6 transition-colors drop-shadow-md"
+          :class="isInWishlist(place.placeId) ? 'fill-red-500 text-red-500' : 'text-white hover:text-red-500'"
+        />
+      </button>
+
       <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
         <div class="text-white">
           <h1 class="text-3xl font-bold mb-1">{{ place.placeName }}</h1>
@@ -56,6 +101,8 @@ defineEmits<{
           :lat="place.latitude || 37.5665" 
           :lng="place.longitude || 126.9780" 
           :place-name="place.placeName"
+          :markers="mapMarkers"
+          @marker-click="handleMarkerClick"
         />
       </div>
 

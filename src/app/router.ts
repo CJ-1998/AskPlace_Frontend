@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
     name: 'home',
     component: () => import('@/features/home/views/HomePage.vue')
   },
-  
+
   // --- User ---
   {
     path: '/mypage',
@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/plans/:planId/daily/:day',
     name: 'daily-plan',
-    component: () => import('@/features/plan/views/DailyPlanView.vue'),
+    component: () => import('@/features/plan/views/DailyPlanPage.vue'),
     meta: { hideFooter: true }
   },
 
@@ -102,14 +102,14 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   const modalStore = useModalStore()
-  
+
   // 1. 세션 복구가 아직 안 끝났다면 기다림
   if (!authStore.isAuthInitialized) {
     await authStore.initAuth()
   }
 
   const protectedRoutes = ['mypage', 'plan-create', 'video-upload', 'my-plan-list', 'plan-edit']
-  
+
   if (protectedRoutes.includes(to.name as string) && !authStore.isLoggedIn) {
     modalStore.openAuth('login')
     // 로그인 모달을 띄우고 홈으로 이동 (또는 이전 페이지 유지)

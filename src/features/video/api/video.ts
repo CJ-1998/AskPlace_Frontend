@@ -29,13 +29,24 @@ export const video = {
   async initUpload(fileName: string, fileType: string) {
     // Call /storage/presigned-url
     interface PresignedUrlResponse {
-        uploadUrl: string;
-        fileName: string; // key
+      uploadUrl: string;
+      fileName: string; // key
     }
     const response = await apiClient.post<ApiResponse<PresignedUrlResponse>>('/storage/presigned-url', {
-        fileName,
-        fileType
+      fileName,
+      fileType
     })
     return response.data.data
   }
 }
+
+export const getLatestVideoByPlace = async (placeId: string): Promise<Video | null> => {
+  try {
+      const response = await apiClient.get<ApiResponse<Video>>(`/videos/place/${placeId}/latest`)
+      return response.data.data
+  } catch (error) {
+      return null
+  }
+}
+
+export type { VideoResponse } from '@/features/video/types/video'

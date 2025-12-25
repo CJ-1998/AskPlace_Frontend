@@ -25,6 +25,11 @@ const isPublic = defineModel<boolean>('isPublic', { default: true })
 
 const props = defineProps<{
   readOnly?: boolean
+  stats?: {
+    totalBudget: number
+    totalDuration: number
+    totalSpots: number
+  }
 }>()
 
 const emit = defineEmits<{
@@ -50,15 +55,34 @@ const handleSave = () => {
 </script>
 
 <template>
-  <div class="h-16 border-b bg-white px-4 flex items-center justify-between shrink-0 gap-4">
-    <!-- Title Input -->
-    <div class="flex-1 max-w-md">
+  <div class="h-20 border-b bg-white px-6 flex items-center justify-between shrink-0 gap-6">
+    <!-- Title & Stats -->
+    <div class="flex-1 max-w-2xl flex flex-col justify-center gap-1">
       <Input 
         v-model="title" 
         :readonly="readOnly"
-        class="font-bold text-lg border-transparent hover:border-slate-200 focus-visible:ring-0 px-2 disabled:opacity-100 disabled:cursor-default"
+        class="font-bold text-xl border-transparent hover:border-slate-200 focus-visible:ring-0 px-2 h-10 p-0 disabled:opacity-100 disabled:cursor-default"
         placeholder="여행 제목을 입력하세요"
       />
+      
+      <!-- Stats Summary -->
+      <div v-if="stats" class="text-base text-slate-600 px-2 flex gap-5 font-medium items-center">
+          <span class="flex items-center">
+            <i class="fa-solid fa-coins mr-2 text-slate-400 text-sm"></i>
+            <strong class="font-bold text-slate-800 mr-0.5">{{ stats.totalBudget.toLocaleString() }}</strong>원
+          </span>
+          <span class="w-[1.5px] h-3.5 bg-slate-300 my-auto"></span>
+          <span class="flex items-center">
+            <i class="fa-regular fa-clock mr-2 text-slate-400 text-sm"></i>
+            <strong class="font-bold text-slate-800 mr-0.5">{{ Math.floor(stats.totalDuration / 60) }}</strong>시간 
+            <strong class="font-bold text-slate-800 ml-1 mr-0.5">{{ stats.totalDuration % 60 }}</strong>분
+          </span>
+          <span class="w-[1.5px] h-3.5 bg-slate-300 my-auto"></span>
+          <span class="flex items-center">
+            <i class="fa-solid fa-location-dot mr-2 text-slate-400 text-sm"></i>
+            <strong class="font-bold text-slate-800 mr-0.5">{{ stats.totalSpots }}</strong>곳
+          </span>
+       </div>
     </div>
 
     <!-- Date Picker -->
@@ -66,7 +90,7 @@ const handleSave = () => {
       <PopoverTrigger as-child>
         <Button
           variant="outline"
-          class="w-[280px] justify-between text-left font-normal"
+          class="w-[300px] justify-between text-left font-normal text-base h-11"
           :class="!dateRange.start && 'text-muted-foreground'"
         >
           <div class="flex items-center">
@@ -97,7 +121,7 @@ const handleSave = () => {
     </Popover>
     
     <!-- ReadOnly Date Display -->
-    <div v-else class="w-[280px] px-3 py-2 text-sm border rounded-md bg-slate-50 text-slate-600 flex items-center">
+    <div v-else class="w-[300px] px-4 py-2.5 text-base border rounded-md bg-slate-50 text-slate-600 flex items-center">
         <i class="fa-regular fa-calendar mr-2"></i>
         <template v-if="dateRange.start">
             {{ dateFormatter.format(dateRange.start.toDate(getLocalTimeZone())) }}
@@ -107,23 +131,12 @@ const handleSave = () => {
         </template>
     </div>
 
-    <!-- Public Toggle -->
-    <div class="flex items-center space-x-2 ml-auto mr-4" v-if="!readOnly">
-      <Switch 
-        id="public-mode" 
-        v-model:checked="isPublic"
-      />
-      <Label for="public-mode" class="text-xs font-medium cursor-pointer">
-        {{ isPublic ? '공개' : '비공개' }}
-      </Label>
-    </div>
-
     <!-- Save Buttons -->
-    <div class="flex gap-2" v-if="!readOnly">
+    <div class="flex gap-3" v-if="!readOnly">
       <Button 
         @click="handleSave" 
-        size="sm"
-        class="text-xs font-bold bg-primary hover:bg-indigo-600"
+        size="lg"
+        class="font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-8 shadow-sm transition-all hover:scale-105"
       >
         저장
       </Button>

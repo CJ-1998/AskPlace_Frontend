@@ -12,7 +12,7 @@ export interface GeoLocation {
     lat: number;
     lng: number;
 }
-  
+
 /**
  * 이동 수단 타입 정의
  * - WALK: 도보
@@ -30,13 +30,13 @@ export type TransportMode = 'WALK' | 'CAR' | 'PUBLIC';
 export interface TransportInfo {
     /** 이동 수단 (UI 아이콘 분기용) */
     mode: TransportMode;
-    
+
     /** 예상 소요 시간 (분 단위) */
     durationMinutes: number;
-    
+
     /** 이동 거리 (km 단위). UI 표기를 위해 미터가 아닌 킬로미터 사용 권장 */
     distanceKm: number;
-    
+
     /** (Optional) 이동 비용 (택시비, 통행료 등 예상치) */
     cost?: number;
 }
@@ -50,10 +50,10 @@ export interface TransportInfo {
 export interface DailySpot {
     /** 프론트엔드 리스트 키 관리를 위한 고유 ID */
     uid: string;
-    
+
     /** 실제 장소의 DB ID (API 요청용) */
     placeId: string;
-    
+
     /** 표시 순서 (0-indexed or 1-indexed) */
     order: number;
 
@@ -62,24 +62,25 @@ export interface DailySpot {
     category: string; // e.g., '관광지', '음식점', '카페'
     description?: string; // (Optional) 한 줄 요약
     thumbnailUrl?: string; // (Optional) 이미지가 없을 경우 대비
+    address?: string; // 장소 상세 주소
 
     // --- 2. Spot Metadata (UI Logic) ---
     location: GeoLocation;
-    
+
     /** (Optional) 입장료 (장소 정보 기반) */
     admissionFee?: number;
-    
+
     /** (Optional) 사용자 설정 예산 (여행 계획 시 입력) */
     budget?: number; // User-planned budget
 
     /** (Optional) 주차 가능 여부. 아이콘 활성화 플래그로 사용. */
     hasParking?: boolean;
-    
+
     /** 권장 체류 시간 (분 단위) */
     stayDurationMinutes: number;
-    
+
     /** 예상 도착 시간 (HH:mm 포맷). 이전 장소의 출발 시간 + 이동 시간을 누적 계산. */
-    arrivalTime?: string; 
+    arrivalTime?: string;
 
     // --- 3. Special Flags ---
     /** 
@@ -117,19 +118,19 @@ export interface DailyStats {
 export interface DailyPlanDetail {
     /** 일자 계획 고유 ID */
     dailyPlanId: string;
-    
+
     /** N일차 (1, 2, 3...) */
     dayNumber: number;
-    
+
     /** 실제 날짜 (YYYY-MM-DD) */
     date: string;
-    
+
     /** (Optional) "제주 동부 감성 투어" 같은 일자별 테마/제목 */
     themeTitle?: string;
 
     /** 이 날의 요약 통계 */
     stats: DailyStats;
-    
+
     /** 
      * 방문 장소 리스트 (순서대로 정렬됨).
      * 렌더링 편의성을 위해 Linked List가 아닌 Ordered Array 형식을 채택.

@@ -7,15 +7,118 @@ const props = defineProps<{
   plan: TravelPlan
 }>()
 
-// Computed Stats
+const parseTime = (timeStr?: string): number => {
+    if (!timeStr) return -1
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    return hours * 60 + minutes
+}
+
+const formatDuration = (totalMinutes: number): string => {
+    if (totalMinutes <= 0) return '0분'
+    const hours = Math.floor(totalMinutes / 60)
+    const minutes = totalMinutes % 60
+    if (hours > 0) return `${hours}시간 ${minutes}분`
+    return `${minutes}분`
+}
+
+const calculateHaversine = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371e3 // meters
+    const toRad = (deg: number) => deg * Math.PI / 180
+    
+    const dLat = toRad(lat2 - lat1)
+    const dLon = toRad(lon2 - lon1)
+    
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2)
+              
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
+}
+
+const formatDistance = (meters: number): string => {
+    if (meters < 1000) return `${Math.round(meters)}m`
+    return `${(meters / 1000).toFixed(1)}km`
+}
+
+const formatCurrency = (amount: number): string => {
+    return `₩${amount.toLocaleString()}`
+}
+
+
 const totalPlaces = computed(() => {
-  return props.plan.dailyPlans.reduce((sum, day) => sum + day.placeDetails.length, 0)
+  if (!props.plan?.dailyPlans) return 0
+  return props.plan.dailyPlans.reduce((sum, day) => sum + (day.placeDetails?.length || 0), 0)
 })
 
-// Mock Data for now as per requirements
-const totalTime = computed(() => '12시간 30분')
-const totalDistance = computed(() => '45.2km')
-const totalCost = computed(() => '₩350,000')
+const totalTime = computed(() => {
+    if (!props.plan?.dailyPlans) return '0분'
+    
+    let totalMinutes = 0
+    
+    props.plan.dailyPlans.forEach(day => {
+        if (!day.placeDetails || day.placeDetails.length === 0) return
+
+        let minStart = Infinity
+        let maxEnd = -Infinity
+        let hasValidTime = false
+
+        day.placeDetails.forEach(place => {
+            const start = parseTime(place.startTime)
+            const end = parseTime(place.endTime)
+
+            if (start !== -1) {
+                if (start < minStart) minStart = start
+                hasValidTime = true
+            }
+            if (end !== -1) {
+                if (end > maxEnd) maxEnd = end
+                hasValidTime = true
+            }
+        })
+        
+        if (hasValidTime && minStart !== Infinity && maxEnd !== -Infinity && maxEnd > minStart) {
+            totalMinutes += (maxEnd - minStart)
+        }
+    })
+    
+    return formatDuration(totalMinutes)
+})
+
+const totalDistance = computed(() => {
+    if (!props.plan?.dailyPlans) return '0km'
+
+    let totalMeters = 0
+
+    props.plan.dailyPlans.forEach(day => {
+        const places = day.placeDetails || []
+        if (places.length < 2) return
+
+        for (let i = 0; i < places.length - 1; i++) {
+            const p1 = places[i]
+            const p2 = places[i + 1]
+            
+            if (p1.latitude && p1.longitude && p2.latitude && p2.longitude) {
+                totalMeters += calculateHaversine(p1.latitude, p1.longitude, p2.latitude, p2.longitude)
+            }
+        }
+    })
+
+    return formatDistance(totalMeters)
+})
+
+const totalCost = computed(() => {
+    if (!props.plan?.dailyPlans) return '₩0'
+    
+    let total = 0
+    props.plan.dailyPlans.forEach(day => {
+        day.placeDetails?.forEach(place => {
+            total += (place.budget || 0)
+        })
+    })
+    
+    return formatCurrency(total)
+})
 
 </script>
 
@@ -38,7 +141,7 @@ const totalCost = computed(() => '₩350,000')
         <div class="w-8 h-8 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-1">
             <i class="fa-regular fa-clock"></i>
         </div>
-        <div class="text-xs text-slate-500 font-medium">총 시간</div>
+        <div class="text-xs text-slate-500 font-medium">순수 여행 시간</div>
         <div class="text-lg font-bold text-slate-900">{{ totalTime }}</div>
       </CardContent>
     </Card>

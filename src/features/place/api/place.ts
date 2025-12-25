@@ -26,7 +26,7 @@ export const placeApi = {
   // GET /places/nearby
   async getNearbyPlaces(lat: number, lng: number, radius: number = 3.0) {
     const response = await apiClient.get<ApiResponse<PlaceListSearchResponseDto>>('/places/nearby', {
-      params: { lat, lng, radius }
+      params: { latitude: lat, longitude: lng, radius }
     })
     return response.data.data
   },

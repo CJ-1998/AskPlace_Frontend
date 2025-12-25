@@ -13,11 +13,13 @@ import { useToast } from '@/shared/composables/useToast'
 import PlanForm from '@/features/plan/components/PlanForm.vue'
 import type { PlanFormData } from '@/features/plan/composables/usePlanForm'
 import type { TravelPlanRequestDto } from '@/features/plan/types/plan'
+import type { Place } from '@/features/place/types/place'
 import { resizeDailyPlans } from '@/features/plan/utils/planResizer'
 
 const props = defineProps<{
   planId: string
   initialData: PlanFormData
+  currentDailyPlans?: Place[][]
 }>()
 
 const emit = defineEmits<{
@@ -39,7 +41,31 @@ const handleSubmit = async (data: PlanFormData) => {
     }
 
     // Smart Resizing Logic
-    const newDailyPlans = resizeDailyPlans(currentPlan, data.startDate, data.endDate)
+    let planToResize = currentPlan
+
+    if (props.currentDailyPlans) {
+      // Map Place[][] to domain DailyPlan[] structure strictly for resizing logic
+      planToResize = {
+        ...currentPlan,
+        dailyPlans: props.currentDailyPlans.map((places, idx) => ({
+           dailyPlanId: `temp-${idx}`,
+           dayNumber: idx + 1,
+           date: '', // Resizer calculates this
+           placeDetails: places.map(p => ({
+             placeDetailId: p.placeId,
+             order: 0,
+             placeName: p.placeName,
+             latitude: p.latitude,
+             longitude: p.longitude,
+             startTime: p.startTime,
+             endTime: p.endTime,
+             budget: p.budget
+           }))
+        }))
+      }
+    }
+
+    const newDailyPlans = resizeDailyPlans(planToResize, data.startDate, data.endDate)
 
     const requestDto: TravelPlanRequestDto = {
         title: data.title,

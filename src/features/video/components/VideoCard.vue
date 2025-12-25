@@ -3,16 +3,13 @@
   <div class="group cursor-pointer" @click="handleClick">
     <div class="aspect-video bg-slate-900 rounded-xl overflow-hidden relative mb-3">
       <img 
-        v-if="video.thumbnailUrl"
-        :src="video.thumbnailUrl" 
+        :src="video.thumbnailUrl || placeholderImg" 
         :alt="video.title"
         class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+        @error="handleImageError"
       >
-      <div v-else class="w-full h-full bg-slate-800 flex items-center justify-center text-slate-600">
-        <i class="fa-solid fa-film text-4xl"></i>
-      </div>
       <div class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-        LIVE
+        ACTIVE
       </div>
       <div class="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur">
         <i class="fa-solid fa-user"></i> {{ video.viewCount }}
@@ -31,6 +28,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import type { Video } from '@/features/video/types/video'
+import placeholderImg from '@/assets/placeholder.png'
 
 const props = defineProps<{
   video: Video
@@ -40,5 +38,10 @@ const router = useRouter()
 
 const handleClick = () => {
   router.push({ name: 'video-detail', params: { id: props.video.id } })
+}
+
+const handleImageError = (e: Event) => {
+  const target = e.target as HTMLImageElement
+  target.src = placeholderImg
 }
 </script>

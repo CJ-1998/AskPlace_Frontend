@@ -79,7 +79,7 @@ const handleSubmit = () => {
       <p v-if="errors.email" class="text-xs text-red-500">{{ errors.email }}</p>
     </div>
     <div class="space-y-2">
-      <Input v-model="form.password" type="password" placeholder="비밀번호 (8자 이상)" />
+      <Input v-model="form.password" type="password" placeholder="비밀번호는(8자 이상, 영문, 숫자, 특수문자를 포함)" />
       <p v-if="errors.password" class="text-xs text-red-500">{{ errors.password }}</p>
     </div>
     <div class="space-y-2">

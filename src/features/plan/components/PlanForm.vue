@@ -27,8 +27,8 @@ const { title, description, dateRange, isValid, getSubmitPayload } = usePlanForm
 // Reactivity for async data loading
 watch(() => props.initialData, (newData) => {
   if (newData) {
-    if (newData.title) title.value = newData.title
-    if (newData.description) description.value = newData.description
+    if (newData.title !== undefined) title.value = newData.title
+    if (newData.description !== undefined) description.value = newData.description
     // Parse dates if they are strings
     if (newData.startDate) {
         try { dateRange.value.start = parseDate(newData.startDate) } catch(e) {}

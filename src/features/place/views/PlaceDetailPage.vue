@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from 'vue'
+import { onMounted, watch, computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useToast } from '@/shared/composables/useToast'
 import PlaceDetail from '@/features/place/components/PlaceDetail.vue'
 import NearbyPlaceCard from '@/features/place/components/NearbyPlaceCard.vue'
 import { usePlace } from '@/features/place/composables/usePlace'
+import { placeApi } from '@/features/place/api/place'
+import type { Place } from '@/features/place/types/place'
 import NavigationBar from '@/shared/components/ui/navigation-bar/NavigationBar.vue'
 
 const router = useRouter()
@@ -12,10 +14,31 @@ const route = useRoute()
 const { showToast } = useToast()
 const { place, places, isLoading, error, getPlace, recommendPlace } = usePlace()
 
-const nearbyPlaces = computed(() => {
-    return places.value
-        .filter(p => p.placeId !== place.value?.placeId)
-        .slice(0, 3)
+const nearbyPlaces = ref<Place[]>([])
+
+const fetchNearby = async (lat: number, lng: number) => {
+    try {
+        const response = await placeApi.getNearbyPlaces(lat, lng, 5.0) // 5km radius
+        // @ts-ignore
+        const list = response.placeSearchResponseDtoList || []
+        
+        nearbyPlaces.value = list
+            .map((p: any) => ({
+                ...p,
+                region: p.placeRegion,
+                siGunGu: p.placeSiGunGu
+            }))
+            .filter((p: any) => p.placeId !== place.value?.placeId)
+            .slice(0, 3)
+    } catch (e) {
+        console.error('Failed to fetch nearby places:', e)
+    }
+}
+
+watch(place, (newPlace) => {
+    if (newPlace?.latitude && newPlace?.longitude) {
+        fetchNearby(newPlace.latitude, newPlace.longitude)
+    }
 })
 
 const fetchPlace = () => {
@@ -66,6 +89,7 @@ const handleAddPlan = () => {
       <PlaceDetail 
         v-else-if="place"
         :place="place"
+        :nearby-places="nearbyPlaces"
         @request-live="handleRequestLive"
         @add-plan="handleAddPlan"
       >
@@ -91,3 +115,5 @@ const handleAddPlan = () => {
   </div>
 </template>
 
+
+<!-- Force HMR update -->

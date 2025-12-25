@@ -8,6 +8,7 @@ export interface VideoResponse {
   duration: number; // seconds
   viewCount: number;
   placeId: string;
+  placeName?: string;
   createdAt: string;
   preSignedUrl: string;
   thumbnailUrl?: string; // Optional because legacy videos might not have it

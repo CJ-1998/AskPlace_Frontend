@@ -12,6 +12,9 @@ export interface PlaceSummary extends PlaceBase {
   placeRegion: string
   placeSiGunGu: string
   placeThumbnailImageUrl?: string
+  contentTypeId?: string
+  placeDetailAddress?: string
+  placeDescription?: string
 }
 
 export interface PlaceDetail extends PlaceBase {
@@ -28,6 +31,8 @@ export interface PlaceDetail extends PlaceBase {
   durationMinutes?: number
   budget?: number
   memo?: string
+  placeThumbnailImageUrl?: string
+  isWishlistPlaceholder?: boolean
 }
 
 // Re-export Place as PlaceDetail for backward compatibility in Detail views,

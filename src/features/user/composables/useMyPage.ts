@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/auth'
 import { userApi } from '@/features/user/api/user'
 import { planApi } from '@/features/plan/api/plan'
+import { video } from '@/features/video/api/video'
 import { useToast } from '@/shared/composables/useToast'
 import type { UserProfile, UserActivity } from '@/features/user/types/user'
 import type { TravelPlanResponseDto } from '@/features/plan/types/plan'
@@ -49,9 +50,10 @@ export function useMyPage() {
     isLoading.value = true
     try {
       // Parallel fetch for better performance
-      const [profileData, myPlansData] = await Promise.allSettled([
+      const [profileData, myPlansData, myVideosData] = await Promise.allSettled([
         userApi.getMyProfile(),
-        planApi.getMyPlans() // Fetch real plans
+        planApi.getMyPlans(), // Fetch real plans
+        video.getVideos({ authorId: user.value?.uuid, size: 100 }) // Fetch all my videos (up to 100)
       ])
 
       if (profileData.status === 'fulfilled') {
@@ -79,11 +81,18 @@ export function useMyPage() {
             uuid: dto.user.uuid,
             name: dto.user.name
           },
+          coverImage: dto.representativeImage,
           // Optional fields not in DTO
           viewCount: 0,
         } as unknown as any))
       } else {
         console.error('Failed to fetch my plans:', myPlansData.status === 'rejected' ? myPlansData.reason : 'No data')
+      }
+
+      if (myVideosData.status === 'fulfilled' && myVideosData.value) {
+        newActivity.myVideos = myVideosData.value.content || []
+      } else {
+        console.error('Failed to fetch my videos:', myVideosData.status === 'rejected' ? myVideosData.reason : 'No data')
       }
 
       activity.value = newActivity

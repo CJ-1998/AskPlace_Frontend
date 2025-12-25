@@ -3,6 +3,7 @@ import { usePlaceSearch } from '@/features/place/composables/usePlaceSearch'
 import { Input } from '@ui/input'
 import { Button } from '@ui/button'
 import placeHolderImage from '@/assets/placeholder.png'
+import { getContentTypeLabel, getContentTypeColor } from '@/features/place/utils/contentTypeMapper'
 
 const { 
   searchText, 
@@ -98,9 +99,9 @@ const {
           v-for="place in places" 
           :key="place.placeId" 
           @click="goToDetail(place.placeId)"
-          class="flex gap-5 bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 cursor-pointer transition-all group"
+          class="flex gap-5 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 hover:shadow-lg hover:-translate-y-1 hover:ring-4 hover:ring-blue-50/50 cursor-pointer transition-all duration-300 group"
         >
-          <div class="w-32 h-24 md:w-40 md:h-28 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+          <div class="w-32 h-32 md:w-40 md:h-40 shrink-0 overflow-hidden rounded-xl bg-slate-100">
             <img 
               :src="place.placeThumbnailImageUrl || place.placeImageUrl || placeHolderImage" 
               :alt="place.placeName"
@@ -109,13 +110,32 @@ const {
           </div>
           
           <div class="flex-1 min-w-0 flex flex-col justify-center">
+            <!-- Content Type Badge -->
+            <div class="mb-2">
+                <span 
+                  class="text-xs font-medium px-2.5 py-1 rounded-lg border"
+                  :class="getContentTypeColor(place.contentTypeId)"
+                >
+                  {{ getContentTypeLabel(place.contentTypeId) }}
+                </span>
+            </div>
+
             <h3 class="font-bold text-lg md:text-xl text-slate-900 group-hover:text-blue-600 transition-colors truncate mb-1">
               {{ place.placeName }}
             </h3>
-            <p class="text-sm text-slate-500 mb-3 flex items-center">
-              <i class="fa-solid fa-location-dot mr-1.5"></i>
-              <span class="truncate">{{ place.placeAddress }}</span>
+
+            <!-- Description -->
+            <p v-if="place.placeDescription" class="text-sm text-slate-600 line-clamp-1 mb-2">
+              {{ place.placeDescription }}
             </p>
+
+            <p class="text-sm text-slate-500 mb-3 flex items-center">
+              <i class="fa-solid fa-location-dot mr-1.5 flex-shrink-0"></i>
+              <span class="truncate">
+                {{ place.placeAddress }} {{ place.placeDetailAddress }}
+              </span>
+            </p>
+            
             <div class="flex gap-2">
               <span class="text-xs font-medium bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg">
                 #{{ place.placeRegion }}

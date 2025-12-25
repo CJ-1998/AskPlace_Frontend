@@ -38,6 +38,7 @@ export const usePlanStore = defineStore('plan', () => {
         contentTypeId: p.contentTypeId,
         region: p.region,
         siGunGu: p.siGunGu,
+        description: p.placeDescription,
         // Map Planning Fields
         startTime: p.placePlanStartTime,
         endTime: p.placePlanEndTime,
@@ -49,6 +50,8 @@ export const usePlanStore = defineStore('plan', () => {
           const diff = (endH * 60 + endM) - (startH * 60 + startM)
           return diff > 0 ? diff : 60
         })(),
+        hasLiveVideo: p.hasLiveVideo,
+        latestVideo: p.latestVideo
       })).sort((a, b) => a.order - b.order)
 
       return {
@@ -88,16 +91,16 @@ export const usePlanStore = defineStore('plan', () => {
 
         id: dto.travelPlanId,
         user: {
-          uuid: dto.travelPlanUserId,
-          name: dto.travelPlanAuthor
+          uuid: dto.user.uuid,
+          name: dto.user.name
         },
         title: dto.travelPlanTitle,
         description: dto.travelPlanDescription,
         duration: `${dto.travelTotalDays - 1}박 ${dto.travelTotalDays}일`, // e.g. 1박 2일
-        coverImage: `https://source.unsplash.com/random/800x600?travel&sig=${dto.travelPlanId.substring(0, 5)}`,
+        coverImage: dto.representativeImage || `https://source.unsplash.com/random/800x600?travel&sig=${dto.travelPlanId.substring(0, 5)}`,
         views: Math.floor(Math.random() * 1000),
         likes: Math.floor(Math.random() * 500),
-        profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${dto.travelPlanAuthor}`
+        profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${dto.user.name}`
       }))
     } catch (error) {
       console.error('Failed to fetch plans', error)
@@ -115,16 +118,16 @@ export const usePlanStore = defineStore('plan', () => {
       plans.value = response.travelPlans.map(dto => ({
         id: dto.travelPlanId,
         user: {
-          uuid: dto.travelPlanUserId,
-          name: dto.travelPlanAuthor
+          uuid: dto.user.uuid,
+          name: dto.user.name
         },
         title: dto.travelPlanTitle,
         description: dto.travelPlanDescription,
         duration: `${dto.travelTotalDays - 1}박 ${dto.travelTotalDays}일`,
-        coverImage: `https://source.unsplash.com/random/800x600?travel&sig=${dto.travelPlanId.substring(0, 5)}`,
+        coverImage: dto.representativeImage || `https://source.unsplash.com/random/800x600?travel&sig=${dto.travelPlanId.substring(0, 5)}`,
         views: Math.floor(Math.random() * 1000),
         likes: Math.floor(Math.random() * 500),
-        profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${dto.travelPlanAuthor}`
+        profileImage: `https://api.dicebear.com/7.x/avataaars/svg?seed=${dto.user.name}`
       }))
     } catch (error) {
       console.error('Failed to fetch my plans', error)

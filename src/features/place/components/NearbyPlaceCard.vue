@@ -1,34 +1,62 @@
-<template>
-  <div 
-    class="flex gap-3 p-3 border rounded-lg hover:shadow-sm cursor-pointer transition-shadow bg-white"
-    @click="$emit('click', place.placeId)"
-  >
-    <div class="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-slate-100">
-      <img 
-        :src="place.placeImageUrl || place.placeThumbnailImageUrl || '/placeholder.jpg'" 
-        :alt="place.placeName" 
-        class="w-full h-full object-cover"
-      >
-    </div>
-    <div class="flex-1 min-w-0 flex flex-col justify-center">
-      <h4 class="font-bold truncate text-slate-800">{{ place.placeName }}</h4>
-      <p class="text-xs text-slate-500 mt-1 truncate"><i class="fa-solid fa-location-dot text-slate-300 mr-1"></i>{{ place.placeAddress }}</p>
-      <!-- TODO : 아직 레이팅에 대한 부분은 구현되지 않았기 때문에 임시로 구현 -->
-      <div class="flex items-center gap-1 mt-2 text-xs text-amber-500 font-bold">
-        <i class="fa-solid fa-star"></i> {{4.5}} <span class="text-slate-300 font-normal">(120)</span>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import type { PlaceSummary } from '@/features/place/types/place'
+import type { Place } from '@/features/place/types/place'
+import { MapPin } from 'lucide-vue-next'
+import { Card, CardContent } from '@ui/card'
+import { Badge } from '@ui/badge'
+import placeHolderImage from '@/assets/placeholder.png'
+import { getContentTypeLabel, getContentTypeColor } from '@/features/place/utils/contentTypeMapper'
 
-defineProps<{
-  place: PlaceSummary
+interface Props {
+  place: Place
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  click: [id: string]
 }>()
 
-defineEmits<{
-  (e: 'click', id: string): void
-}>()
+const handleClick = () => {
+  emit('click', props.place.placeId)
+}
 </script>
+
+<template>
+  <Card 
+    class="overflow-hidden bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group relative p-0 gap-0"
+    @click="handleClick"
+  >
+    <div class="aspect-[16/9] w-full overflow-hidden relative">
+      <img 
+        :src="place.placeThumbnailImageUrl || place.placeImageUrl || placeHolderImage" 
+        :alt="place.placeName" 
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    </div>
+    
+    <CardContent class="p-3">
+      <div class="mb-1">
+        <h3 class="text-sm font-bold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">{{ place.placeName }}</h3>
+      </div>
+
+      <div class="flex items-start gap-1 text-xs text-gray-500 mb-2">
+        <MapPin class="w-3 h-3 mt-0.5 shrink-0" />
+        <span class="line-clamp-1">{{ place.placeAddress }}</span>
+      </div>
+
+      <div class="flex flex-wrap gap-1">
+        <Badge 
+            variant="outline" 
+            class="rounded text-[10px] px-1.5 py-0.5 border"
+            :class="getContentTypeColor(place.contentTypeId)"
+        >
+          {{ getContentTypeLabel(place.contentTypeId) }}
+        </Badge>
+        <Badge variant="secondary" class="bg-slate-100 text-slate-600 rounded text-[10px] px-1.5 py-0.5 font-normal">
+          {{ place.region }}
+        </Badge>
+      </div>
+    </CardContent>
+  </Card>
+</template>

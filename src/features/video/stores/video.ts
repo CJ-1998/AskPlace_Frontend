@@ -24,6 +24,7 @@ export const useVideoStore = defineStore('video', () => {
     isLoading.value = true
     try {
       currentVideo.value = await video.getVideoDetail(id)
+      console.log(currentVideo.value.preSignedUrl)
       return currentVideo.value
     } catch (error) {
       console.error('Failed to fetch video', error)

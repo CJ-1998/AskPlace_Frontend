@@ -34,7 +34,7 @@ export function useVideoUpload() {
     }
 
     file.value = selectedFile
-    
+
     // Auto-fill title if empty
     if (!title.value) {
       title.value = selectedFile.name.split('.').slice(0, -1).join('.')
@@ -80,56 +80,56 @@ export function useVideoUpload() {
       video.muted = true
       video.crossOrigin = 'anonymous'
       video.playsInline = true
-      
+
       const url = URL.createObjectURL(videoFile)
       video.src = url
-      
+
       video.onloadeddata = () => {
-         // Fallback if metadata load is weird? No, usually handled by metadata.
+        // Fallback if metadata load is weird? No, usually handled by metadata.
       }
 
       video.onloadedmetadata = () => {
         const duration = Number.isFinite(video.duration) ? video.duration : 10
         // Try to seek to 1.5s or 20% to skip intro fades
-        video.currentTime = Math.min(duration - 0.5, Math.max(1.5, duration * 0.2)) 
+        video.currentTime = Math.min(duration - 0.5, Math.max(1.5, duration * 0.2))
       }
-      
+
       video.onseeked = () => {
         // Small delay to ensure frame is decoded and ready for canvas
         setTimeout(() => {
-            try {
-              if (video.videoWidth === 0 || video.videoHeight === 0) {
-                 reject(new Error('Video dimensions are zero, cannot generate thumbnail'))
-                 URL.revokeObjectURL(url)
-                 return
-              }
-
-              const canvas = document.createElement('canvas')
-              canvas.width = 640
-              canvas.height = 360
-              
-              const ctx = canvas.getContext('2d')
-              if (!ctx) throw new Error('Canvas context not supported')
-              
-              // Draw video to canvas
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-              
-              canvas.toBlob((blob) => {
-                if (blob) {
-                  const rectFile = new File([blob], `thumb_${videoFile.name.split('.')[0]}.jpg`, { type: 'image/jpeg' })
-                  resolve(rectFile)
-                } else {
-                  reject(new Error('Thumbnail generation failed'))
-                }
-                URL.revokeObjectURL(url)
-              }, 'image/jpeg', 0.8)
-            } catch (e) {
-              reject(e)
+          try {
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+              reject(new Error('Video dimensions are zero, cannot generate thumbnail'))
               URL.revokeObjectURL(url)
+              return
             }
+
+            const canvas = document.createElement('canvas')
+            canvas.width = 640
+            canvas.height = 360
+
+            const ctx = canvas.getContext('2d')
+            if (!ctx) throw new Error('Canvas context not supported')
+
+            // Draw video to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const rectFile = new File([blob], `thumb_${videoFile.name.split('.')[0]}.jpg`, { type: 'image/jpeg' })
+                resolve(rectFile)
+              } else {
+                reject(new Error('Thumbnail generation failed'))
+              }
+              URL.revokeObjectURL(url)
+            }, 'image/jpeg', 0.8)
+          } catch (e) {
+            reject(e)
+            URL.revokeObjectURL(url)
+          }
         }, 300) // 300ms delay
       }
-      
+
       video.onerror = () => {
         reject(new Error('Video load failed. Codec might not be supported.'))
         URL.revokeObjectURL(url)
@@ -147,32 +147,32 @@ export function useVideoUpload() {
     try {
       isUploading.value = true
       uploadStep.value = 'preparing'
-      
+
       // Step 0: Generate Thumbnail
       const thumbnailFile = await generateThumbnail(file.value)
-      
+
       // Step 1: Get Pre-signed URLs for BOTH Video and Thumbnail
       const [videoUpload, thumbUpload] = await Promise.all([
         video.initUpload(file.value.name, file.value.type),
         video.initUpload(thumbnailFile.name, thumbnailFile.type)
       ])
-      
+
       // Step 2: Upload to S3 (Parallel)
       uploadStep.value = 'uploading'
-      
+
       const uploadPromises = [
         axios.put(videoUpload.uploadUrl, file.value, {
-            headers: { 'Content-Type': file.value.type },
-            onUploadProgress: (progressEvent) => {
-                if (progressEvent.total) {
-                // Approximate 80% weight to video
-                const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                uploadProgress.value = Math.round(percent * 0.9)
-                }
+          headers: { 'Content-Type': file.value.type },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              // Approximate 80% weight to video
+              const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+              uploadProgress.value = Math.round(percent * 0.9)
             }
+          }
         }),
         axios.put(thumbUpload.uploadUrl, thumbnailFile, {
-             headers: { 'Content-Type': thumbnailFile.type }
+          headers: { 'Content-Type': thumbnailFile.type }
         })
       ]
 
@@ -184,7 +184,7 @@ export function useVideoUpload() {
       await video.saveVideo({
         title: title.value,
         description: description.value,
-        objectKey: videoUpload.fileName, 
+        objectKey: videoUpload.fileName,
         thumbnailObjectKey: thumbUpload.fileName, // Pass thumb key
         placeId: destinationId.value?.toString() || '',
         duration: 0
@@ -192,7 +192,7 @@ export function useVideoUpload() {
 
       uploadStep.value = 'completed'
       showToast('업로드가 완료되었습니다!', 'success')
-      
+
       setTimeout(() => {
         router.push('/videos')
       }, 1500)
@@ -215,7 +215,7 @@ export function useVideoUpload() {
     uploadProgress,
     uploadStep,
     isDragging,
-    
+
     // Methods
     removeFile,
     handleFileChange,

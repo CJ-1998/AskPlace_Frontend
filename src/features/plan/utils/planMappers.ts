@@ -57,21 +57,22 @@ export const createPlanRequestDto = (
     
     // Create Place Plans
     const placePlanRequestDtoList: PlacePlanRequestDto[] = places.map((place) => {
-        // Simple duration calculation if needed, or just rely on user input
-        // For now, we use what's in the place object
-        let calculatedEndTime = place.endTime || '12:00'
-        if (place.startTime && place.durationMinutes) {
+        // Prioritize explicit endTime if set by user
+        let finalEndTime = place.endTime || '12:00'
+        
+        // If no endTime is set, try to calculate from duration (fallback)
+        if (!place.endTime && place.startTime && place.durationMinutes) {
              const [hours, minutes] = place.startTime.split(':').map(Number)
              const totalMinutes = hours * 60 + minutes + place.durationMinutes
              const endHours = Math.floor(totalMinutes / 60) % 24
              const endMinutes = totalMinutes % 60
-             calculatedEndTime = `${String(endHours).padStart(2,'0')}:${String(endMinutes).padStart(2,'0')}`
+             finalEndTime = `${String(endHours).padStart(2,'0')}:${String(endMinutes).padStart(2,'0')}`
         }
 
         return {
           placeId: place.placeId,
           startTime: (place.startTime || '10:00').substring(0, 5), // Ensure HH:mm
-          endTime: calculatedEndTime.substring(0, 5), // Ensure HH:mm
+          endTime: finalEndTime.substring(0, 5), // Ensure HH:mm
           budget: place.budget || 0
         }
     })

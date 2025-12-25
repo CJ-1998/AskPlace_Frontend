@@ -1,10 +1,15 @@
+import type { VideoResponse } from '@/features/video/types/video'
+
 export interface TravelPlanResponseDto {
   travelPlanId: string;
   travelPlanTitle: string;
   travelPlanDescription: string;
-  travelPlanUserId: string;
-  travelPlanAuthor: string;
+  user: {
+    uuid: string;
+    name: string;
+  };
   travelTotalDays: number;
+  representativeImage?: string;
 }
 
 export interface TravelPlanListResponseDto {
@@ -29,6 +34,8 @@ export interface PlacePlanResponseDto {
   contentTypeId?: string;
   placeImageUrl?: string;
   placeThumbnailImageUrl?: string;
+  hasLiveVideo?: boolean;
+  latestVideo?: VideoResponse;
 }
 
 export interface DailyPlanResponseDto {
@@ -99,13 +106,17 @@ export interface PlaceDetail {
   contentTypeId?: string;
   placeAddress?: string;
   placeImageUrl?: string;
-  
+
   // Planning Fields
   startTime?: string;
   endTime?: string;
   durationMinutes?: number;
   budget?: number;
   memo?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  hasLiveVideo?: boolean;
+  latestVideo?: VideoResponse;
 }
 
 export interface DailyPlan {
@@ -134,7 +145,7 @@ export interface TravelPlan {
   totalDistance?: number;
   budget?: number;
   dailyPlans?: DailyPlan[];
-  
+
   // UI Specific Fields (Mocked/Calculated)
   coverImage?: string;
   views?: number;
