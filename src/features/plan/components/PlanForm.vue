@@ -98,7 +98,7 @@ const handleSubmit = () => {
         
         <!-- Inline Calendar -->
         <RangeCalendar 
-          v-model="dateRange as any" 
+          v-model="dateRange" 
           :number-of-months="2"
           class="rounded-md border bg-white shadow-sm" 
         />

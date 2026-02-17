@@ -20,3 +20,9 @@ vercel login
 
 # 배포 
 vercel --prod
+
+# build 관련
+package.json -> scripts -> build 
+"vue-tsc -b && vite build" -> "vite build"
+앞의 값은 오류 검사 빡세게 함
+오류 다 고치면 앞의 것으로 수정 필요
