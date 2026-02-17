@@ -1,0 +1,22 @@
+# 의존성 라이브러리 설치
+npm install
+
+# 개발 서버 실행
+npm run dev
+
+# Vercel CLI 설치 및 로그인
+npm i -g vercel
+vercel login
+
+# vercel.json 설정
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
+# 배포 
+vercel --prod
